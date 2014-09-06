@@ -22,7 +22,21 @@ _.extend(yptxHelper.prototype, {
     // `user.name`
     // `user.pass`
     // `user.email`.
-    popSession: function(user, res) {
+    popSession: function(user, res, req) {
+        if (user) {
+          // Regenerate session when signing in
+          // to prevent fixation
+          console.log("##########Generate Session##########");
+          // req.session.regenerate(function(){
+          //   // Store the user's primry key
+          //   // in the session store to be retrieved,
+          //   // or in this case the entire user object
+          //   req.session.user = user;
+          // });
+          req.session.user = user;
+          console.log(req.session);
+          console.log("##########End Generate Session######");
+        }
         //cookie valid in 30 days.
         var authToken = this.genAuthToken(user);
         res.cookie(config.auth_cookie_name, authToken, {
@@ -37,7 +51,10 @@ _.extend(yptxHelper.prototype, {
     },
 
     // Clear http response cookies.
-    clearCookie: function(res) {
+    clearCookieAndSession: function(res, req) {
+        req.session.destroy(function(){
+            //res.redirect('/');
+        });
         res.clearCookie(config.auth_cookie_name, {
             path: '/'
         });
@@ -78,6 +95,17 @@ _.extend(yptxHelper.prototype, {
             size--;
         }
         return new_pass;
+    },
+
+    restrict: function(req, res, next) {
+      console.log(req.session);
+      console.log(next);
+      if (req.session.user) {
+        next();
+      } else {
+        req.session.error = 'Access denied!';
+        res.redirect('/login');
+      }
     }
 });
 
