@@ -9,8 +9,8 @@ var UserSchema   = new Schema({
 	avatar: String,
 	update_at: { type: Date, default: Date.now },
 	is_admin: Boolean,
-	permission_list: Array
-
+	permission_list: Array,
+	status: String
 });
 
 UserSchema.methods.findUserByName = function (cb, username) {

@@ -14,6 +14,12 @@ router.get('/login', function(req, res) {
   res.render('login');
 })
 
+// Create User Page
+router.get('/user/create', function (req, res, next) {
+  res.render('createuser', {'active': 'createUser'});
+})
+
+
 // Login API
 router.post('/login', function(req, res) {
         console.log("Rquest to login");
@@ -47,21 +53,22 @@ router.post('/login', function(req, res) {
         });
 });
 
-router.get('/register', function(req, res) {
+//Create user api
+router.post('/createuser', function(req, res) {
+    //TODO Validation
     var user = new User(); 		// create a new instance of the Bear model
-		user.username = req.query.username;  // set the bears name (comes from the request)
-    user.password = ytHelper.md5(req.query.password);
-    user.is_admin = req.query.is_admin;
+		user.username = req.body.username;  // set the bears name (comes from the request)
+    user.password = ytHelper.md5(req.body.password);
+    user.is_admin = req.body.is_admin;
 		// save the bear and check for errors
 		user.save(function(err) {
 			if (err)
-				res.send(err);
-			res.json({ message: 'User created!' });
+				res.json({"success": false, "message": "创建用户失败"});
+			res.json({ "success" : true });
 		});
 });
 
 router.get('/logout', function(req, res) {
-    //req.session.destroy();
     ytHelper.clearCookieAndSession(res, req);
     res.send({
         success: true,

@@ -38,6 +38,11 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- include the core styles -->
+    <link rel="stylesheet" href="/stylesheets/alertjs/themes/alertify.core.css" />
+    <!-- include a theme, can be included into the core instead of 2 separate files -->
+    <link rel="stylesheet" href="/stylesheets/alertjs/themes/alertify.default.css" />
+
 </head>
 
 <body>
@@ -99,7 +104,7 @@
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 用户管理 <span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="flot.html">用户创建</a>
+                                    <a onclick="getCreateUserPage()">用户创建</a>
                                 </li>
                                 <li>
                                     <a href="morris.html">用户权限</a>
@@ -132,5 +137,7 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="/javascripts/sb-admin-2.js"></script>
+    <script src="/javascripts/plugins/alertify.js"></script>
+    <script src="/javascripts/yptx/index.js"></script>
     </body>
 </html>
