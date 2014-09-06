@@ -16,9 +16,9 @@
     "stylus": "~0.48.1",
     "mongoose": "~3.8.15",
     "underscore": "~1.7.0",
-    "express-session": "~1.7.6",
-    "redis": "~0.12.1"
+    "express-session": "~1.7.6"
   },
+  
   "engines": {
     "node": "~0.10.31",
     "npm": "~2.0.0"
