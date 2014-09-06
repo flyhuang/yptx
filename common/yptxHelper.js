@@ -39,7 +39,7 @@ _.extend(yptxHelper.prototype, {
         }
         //cookie valid in 30 days.
         var authToken = this.genAuthToken(user);
-        res.cookie(config.auth_cookie_name, authToken, {
+        return res.cookie(config.auth_cookie_name, authToken, {
             path: '/',
             maxAge: 1000 * 60 * 60 * 24 * 30
         });
