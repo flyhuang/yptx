@@ -8,6 +8,8 @@ var session = require('express-session')
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var api = require('./routes/api');
+var messages = require('./routes/messages');
 // var redis = require('redis');
 
 //var db = redis.createClient(port, "pub-redis-15095.us-east-1-3.1.ec2.garantiadata.com:15095");
@@ -38,6 +40,8 @@ app.use(session({
 }));
 
 app.use('/dashboard', routes);
+app.use('/api', api);
+app.use('/messages', messages);
 app.use('/', users);
 
 // catch 404 and forward to error handler
@@ -73,8 +77,8 @@ app.use(function(err, req, res, next) {
 
 // Config mongoose connection
 var mongoose   = require('mongoose');
-//mongoose.connect('mongodb://localhost:27017/yptx'); // connect to our database
-mongoose.connect('mongodb://wade:wow520@kahana.mongohq.com:10045/yptx'); // connect to our database
+mongoose.connect('mongodb://localhost:27017/yptx'); // connect to our database
+//mongoose.connect('mongodb://wade:wow520@kahana.mongohq.com:10045/yptx'); // connect to our database
 
 module.exports = app;
 

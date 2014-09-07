@@ -1,6 +1,6 @@
 function login() {
   $.ajax({
-    url: "/login",
+    url: "/api/login",
     datatype: "json",
     type: "POST",
     data: {"username": $("input[name='username']").val(), "password": $("input[name='password']").val()},
