@@ -1,0 +1,49 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">消息管理</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                创建
+                <% if (type == 'realtime') { %>
+                实时建议
+                <% } %>
+                <% if (type == 'operation') { %>
+                操作建议
+                <% } %>
+                <% if (type == 'notice') { %>
+                公告
+                <% } %>
+            </div>
+            <div class="panel-body">
+                <form role="form" id="createMegForm">
+                    <div class="form-group">
+                        <label for="title">标题</label>
+                        <input type="title" name="title" class="form-control" id="title" placeholder="标题"
+                                value="<% if (locals.id) { %><%= title %><% }%>">
+                    </div>
+                    <div class="form-group">
+                        <label for="msgContent">内容</label>
+                        <textarea name="msgContent" class="form-control">
+                            <% if (locals.id) { %>
+                                <%= content %>
+                            <% } else {%>
+                            <% } %>
+                        </textarea>
+                    </div>
+
+                    <% if (locals.id) { %>
+                        <button type="button" class="btn btn-primary" onclick="updateMessage('<%= id %>')">更新消息</button>
+                    <% } else {%>
+                        <button type="button" class="btn btn-primary" onclick="createMessage('<%= type %>')">创建消息</button>
+                    <% } %>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

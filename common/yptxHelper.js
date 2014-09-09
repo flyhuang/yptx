@@ -13,7 +13,8 @@ var crypto = require('crypto'),
     config = require('../conf/yptx-conf').config,
     _ = require('underscore');
 
-var yptxHelper = function yptxHelper() {};
+var yptxHelper = function yptxHelper() {
+};
 
 _.extend(yptxHelper.prototype, {
 
@@ -22,20 +23,16 @@ _.extend(yptxHelper.prototype, {
     // `user.name`
     // `user.pass`
     // `user.email`.
-    popSession: function(user, res, req) {
+    popSession: function (user, res, req) {
         if (user) {
-          // Regenerate session when signing in
-          // to prevent fixation
-          console.log("##########Generate Session##########");
-          // req.session.regenerate(function(){
-          //   // Store the user's primry key
-          //   // in the session store to be retrieved,
-          //   // or in this case the entire user object
-          //   req.session.user = user;
-          // });
-          req.session.user = user;
-          console.log(req.session);
-          console.log("##########End Generate Session######");
+            // req.session.regenerate(function(){
+            //   // Store the user's primry key
+            //   // in the session store to be retrieved,
+            //   // or in this case the entire user object
+            //   req.session.user = user;
+            // });
+            req.session.user = user[0];
+            req.session.save();
         }
         //cookie valid in 30 days.
         var authToken = this.genAuthToken(user);
@@ -46,13 +43,13 @@ _.extend(yptxHelper.prototype, {
     },
 
     // Generate authentication token.
-    genAuthToken: function(user) {
+    genAuthToken: function (user) {
         return this.encrypt(user._id + '\t' + user.name + '\t' + user.password, config.session_secret);
     },
 
     // Clear http response cookies.
-    clearCookieAndSession: function(res, req) {
-        req.session.destroy(function(){
+    clearCookieAndSession: function (res, req) {
+        req.session.destroy(function () {
             //res.redirect('/');
         });
         res.clearCookie(config.auth_cookie_name, {
@@ -61,7 +58,7 @@ _.extend(yptxHelper.prototype, {
     },
 
     // Encrypt string with AES192.
-    encrypt: function(str, secret) {
+    encrypt: function (str, secret) {
         var cipher = crypto.createCipher('aes192', secret);
         var enc = cipher.update(str, 'utf8', 'hex');
         enc += cipher.final('hex');
@@ -69,7 +66,7 @@ _.extend(yptxHelper.prototype, {
     },
 
     // Decrypt string with AES192.
-    decrypt: function(str, secret) {
+    decrypt: function (str, secret) {
         var decipher = crypto.createDecipher('aes192', secret);
         var dec = decipher.update(str, 'hex', 'utf8');
         dec += decipher.final('utf8');
@@ -77,7 +74,7 @@ _.extend(yptxHelper.prototype, {
     },
 
     // Encrypt string with MD5.
-    md5: function(str) {
+    md5: function (str) {
         var md5sum = crypto.createHash('md5');
         md5sum.update(str);
         str = md5sum.digest('hex');
@@ -85,7 +82,7 @@ _.extend(yptxHelper.prototype, {
     },
 
     // Generate random string.
-    randomString: function(size) {
+    randomString: function (size) {
         size = size || 6;
         var code_string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         var max_num = code_string.length + 1;
@@ -97,15 +94,15 @@ _.extend(yptxHelper.prototype, {
         return new_pass;
     },
 
-    restrict: function(req, res, next) {
-      console.log(req.session);
-      console.log(next);
-      if (req.session.user) {
-        next();
-      } else {
-        req.session.error = 'Access denied!';
-        res.redirect('/login');
-      }
+    restrict: function (req, res, next) {
+        console.log(req.session);
+        if (req.session.user) {
+            res.locals.session = req.session;
+            return next();
+        } else {
+            req.session.error = 'Access denied!';
+            return res.redirect('/login');
+        }
     }
 });
 
