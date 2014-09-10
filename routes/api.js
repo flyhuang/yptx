@@ -1,3 +1,4 @@
+require('mongoose-pagination');
 var express = require('express'),
     User = require('../models/user'),
     ytHelper = require('../common/yptxHelper'),
@@ -8,10 +9,9 @@ var express = require('express'),
 
 // Get messages
 router.get('/messages/:type', function (req, res) {
-    Message.find({ "type": req.params['type']}, function (error, messages) {
-        if (error) return res.json({"success": false});
-        var result = messages;
-        if (req.query.is_admin_request) {
+    if (req.query.is_admin_request) {
+        Message.find({ "type": req.params['type']}, function (error, messages) {
+            if (error) return res.json({"success": false});
             var messageList = [];
             for (var i = 0; i < messages.length; i++) {
                 var message = messages[i];
@@ -22,13 +22,25 @@ router.get('/messages/:type', function (req, res) {
                 messageResult.push("<a onclick='deleteMsg(\"" + message.id + "\")'>删除</a>");
                 messageList.push(messageResult);
             }
-            result = messageList;
-        }
-        return res.json({
-            "success": true,
-            "data": result
-        });
-    })
+            return res.json({
+                "success": true,
+                "data": messageList
+            });
+        })
+    } else {
+        var page  = req.query.page ? req.query.page : 1;
+        var count = req.query.count ? req.query.count : 10;
+        Message.find({ "type": req.params['type']}).paginate(page, count, function (error, messages, total) {
+            if (error) return res.json({"success": false});
+            return res.json({
+                "success": true,
+                "data": messages,
+                "total": total,
+                "page": page,
+                "count": messages.length
+            });
+        })
+    }
 });
 
 // Create messages
