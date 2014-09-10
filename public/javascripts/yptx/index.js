@@ -71,6 +71,17 @@ function getEditMsgPage(id) {
     })
 }
 
+function getPermissionPage() {
+    $.ajax({
+        url: "/user/permission",
+        datatype: "text/html",
+        type: "get",
+        success: function (res) {
+            $("#page-wrapper").html(res);
+        }
+    })
+}
+
 // Page request end...
 
 
@@ -170,6 +181,22 @@ function updateUser(id) {
         success: function (res) {
             if (res.success) {
                 alertify.success("更新用户信息成功!");
+            } else {
+                alertify.error(res.msg);
+            }
+        }
+    })
+}
+
+function updatePermission() {
+    $.ajax({
+        url: "/api/permission",
+        datatype: "json",
+        type: "post",
+        data: $("#permission-form").serialize(),
+        success: function (res) {
+            if (res.success) {
+                alertify.success("更新游客用户权限成功!");
             } else {
                 alertify.error(res.msg);
             }

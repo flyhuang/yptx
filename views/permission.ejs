@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            游客权限设置
+        </h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                游客权限设置
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <form id="permission-form">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="realtime"
+                                    <% if (forbid_dict.realtime ) { %>
+                                   checked
+                                    <% } %>
+                                    > 不允许查看实时建议
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="operation"
+                                    <% if (forbid_dict.operation ) { %>
+                                   checked
+                                    <% } %>
+                                    > 不允许查看操作建议
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="notice"
+                                    <% if (forbid_dict.notice ) { %>
+                                   checked
+                                    <% } %>
+                                    > 不允许查看公告
+                        </label>
+                    </div>
+                    <input type="button" value="更新游客权限" class="btn btn-primary" onclick="updatePermission()">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

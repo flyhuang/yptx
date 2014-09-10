@@ -4,6 +4,7 @@ var express = require('express'),
     ytHelper = require('../common/yptxHelper'),
     Message = require('../models/message'),
     _ = require('underscore'),
+    Permission = require('../models/permission'),
     router = express.Router();
 
 
@@ -116,7 +117,7 @@ router.post('/login', function (req, res) {
             })
         }
         if (isAdmin) {
-            if (!userDetails.is_admin) {
+            if (!userDetails[0].is_admin) {
                 return res.json({
                     success: false,
                     msg: "没有权限登陆, 请联系管理员!"
@@ -222,6 +223,41 @@ router.post('/user/changepassword/:id', function (req, res) {
             return res.json({ "success": true, "msg": "密码更新成功" });
         });
     })
+});
+
+router.get('/permission', function (req, res) {
+    Permission.find({}, function(err, permissions) {
+        if (err) return res.json({"success" : false});
+        var forbid_dict = {"realtime": false, "operation": false, "notice":false};
+        for (var i = 0; i < permissions.length; i ++) {
+            var permission = permissions[i];
+            if (permission.message_type != undefined) {
+                forbid_dict[permission.message_type] = permission.is_forbid;
+            }
+        }
+        return res.json({forbid_dict : forbid_dict, success: true})
+    });
+});
+
+router.post('/permission', function (req, res) {
+    var realtime = req.body.realtime;
+    var operation = req.body.operation;
+    var notice = req.body.notice;
+    var permission = {
+        "realtime":realtime,
+        "operation":operation,
+        "notice":notice
+    };
+    var permissionList = ['realtime', 'operation', 'notice'];
+    for (var i = 0; i < permissionList.length; i ++) {
+        var query = {'message_type': permissionList[i]};
+        var updateParams = {'is_forbid': permission[permissionList[i]]};
+        Permission.findOneAndUpdate(query, updateParams, {'upsert':true}, function (err, permission) {
+            if (err) console.log("更新权限失败");
+        });
+    }
+    return res.json({ "success": true });
+
 });
 
 module.exports = router;

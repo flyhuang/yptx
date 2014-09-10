@@ -2,7 +2,8 @@ var express = require('express'),
     User = require('../models/user'),
     ytHelper = require('../common/yptxHelper'),
     _ = require('underscore'),
-    router = express.Router();
+    router = express.Router(),
+    Permission = require('../models/permission');
 
 // redirect login page.
 router.get('/', function (req, res) {
@@ -35,6 +36,20 @@ router.get('/user/edit/:id', function (req, res, next) {
 // User List Page
 router.get('/user/list', function (req, res, next) {
     res.render('userlist')
+});
+
+
+router.get('/user/permission', function (req, res, next) {
+    Permission.find({}, function(err, permissions) {
+        if (err) return res.json({"success" : false});
+        var forbid_dict = {"realtime": false, "operation": false, "notice":false};
+        for (var i = 0; i < permissions.length; i ++) {
+            var permission = permissions[i];
+            forbid_dict[permission.message_type] = permission.is_forbid;
+        }
+        return res.render('permission', {forbid_dict : forbid_dict})
+    });
+
 });
 
 module.exports = router;
