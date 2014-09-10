@@ -13,13 +13,13 @@ router.get('/messages/:type', function (req, res) {
         var result = messages;
         if (req.query.is_admin_request) {
             var messageList = [];
-            for ( var i = 0; i < messages.length; i++) {
+            for (var i = 0; i < messages.length; i++) {
                 var message = messages[i];
                 var messageResult = [];
                 messageResult.push(message.title);
                 messageResult.push(message.update_at);
-                messageResult.push("<a onclick='getEditMsgPage(\""+ message.id + "\")'>修改</a>");
-                messageResult.push("<a onclick='deleteMsg(\""+ message.id + "\")'>删除</a>");
+                messageResult.push("<a onclick='getEditMsgPage(\"" + message.id + "\")'>修改</a>");
+                messageResult.push("<a onclick='deleteMsg(\"" + message.id + "\")'>删除</a>");
                 messageList.push(messageResult);
             }
             result = messageList;
@@ -51,7 +51,7 @@ router.post('/messages/update/:id', function (req, res, next) {
     var id = req.params['id'];
     var title = req.body.title;
     var content = req.body.content;
-    Message.findOneAndUpdate({_id : id}, {title:title, content:content}, function(err, message) {
+    Message.findOneAndUpdate({_id: id}, {title: title, content: content}, function (err, message) {
         if (err)
             return res.json({"success": false, "message": "更新消息失败"});
         return res.json({ "success": true });
@@ -63,7 +63,7 @@ router.post('/messages/update/:id', function (req, res, next) {
 router.delete('/messages/delete/:messageid', function (req, res, next) {
     Message.where().findOneAndRemove({ _id: req.params["messageid"]}, function (error, callback) {
         if (error) return res.json({"success": false});
-        res.json({"success" : true, "msg": "删除成功"});
+        res.json({"success": true, "msg": "删除成功"});
     })
 });
 

@@ -25,22 +25,22 @@
                     <div class="form-group">
                         <label for="title">标题</label>
                         <input type="title" name="title" class="form-control" id="title" placeholder="标题"
-                                value="<% if (locals.id) { %><%= title %><% }%>">
+                               value="<% if (locals.id) { %> <%= title %> <% } %>">
                     </div>
                     <div class="form-group">
                         <label for="msgContent">内容</label>
                         <textarea name="msgContent" class="form-control">
                             <% if (locals.id) { %>
-                                <%= content %>
-                            <% } else {%>
+                            <%= content %>
+                            <% } else { %>
                             <% } %>
                         </textarea>
                     </div>
 
                     <% if (locals.id) { %>
-                        <button type="button" class="btn btn-primary" onclick="updateMessage('<%= id %>')">更新消息</button>
-                    <% } else {%>
-                        <button type="button" class="btn btn-primary" onclick="createMessage('<%= type %>')">创建消息</button>
+                    <button type="button" class="btn btn-primary" onclick="updateMessage('<%= id %>')">更新消息</button>
+                    <% } else { %>
+                    <button type="button" class="btn btn-primary" onclick="createMessage('<%= type %>')">创建消息</button>
                     <% } %>
                 </form>
             </div>

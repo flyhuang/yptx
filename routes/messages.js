@@ -14,12 +14,12 @@ router.get('/create/:type', function (req, res) {
 // render message update page.
 router.get('/update/:id', function (req, res) {
     var id = req.params["id"];
-    Message.findOne({_id: id}, function(err, message) {
+    Message.findOne({_id: id}, function (err, message) {
         console.log(message);
         res.render('message-create', {
             "type": message.type,
             "id": id,
-            "title":message.title,
+            "title": message.title,
             "content": message.content
         });
     });

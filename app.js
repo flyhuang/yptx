@@ -33,10 +33,10 @@ app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  resave: false, // don't save session if unmodified
-  saveUninitialized: false, // don't create session until something stored
-  secret: 'yptx_srv',
-  cookie: { maxAge: 60 * 60 * 30 }
+    resave: false, // don't save session if unmodified
+    saveUninitialized: false, // don't create session until something stored
+    secret: 'yptx_srv',
+    cookie: { maxAge: 60 * 60 * 30 }
 }));
 
 app.use('/dashboard', routes);
@@ -45,7 +45,7 @@ app.use('/messages', messages);
 app.use('/', users);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -56,7 +56,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
+    app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -67,7 +67,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
@@ -76,7 +76,7 @@ app.use(function(err, req, res, next) {
 });
 
 // Config mongoose connection
-var mongoose   = require('mongoose');
+var mongoose = require('mongoose');
 //mongoose.connect('mongodb://localhost:27017/yptx'); // connect to our database
 mongoose.connect('mongodb://wade:wow520@kahana.mongohq.com:10045/yptx'); // connect to our database
 

@@ -36,116 +36,116 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-        <!-- DataTables CSS -->
+    <!-- DataTables CSS -->
     <link href="/stylesheets/plugins/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- include the core styles -->
-    <link rel="stylesheet" href="/stylesheets/alertjs/themes/alertify.core.css" />
+    <link rel="stylesheet" href="/stylesheets/alertjs/themes/alertify.core.css"/>
     <!-- include a theme, can be included into the core instead of 2 separate files -->
-    <link rel="stylesheet" href="/stylesheets/alertjs/themes/alertify.default.css" />
+    <link rel="stylesheet" href="/stylesheets/alertjs/themes/alertify.default.css"/>
 
 </head>
 
 <body>
-    <div id="wrapper">
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/dashboard">银评天下 后台管理系统</a>
-            </div>
-            <!-- /.navbar-header -->
-
-            <ul class="nav navbar-top-links navbar-right">
-                <li>
-                  欢迎, <%=locals.session ? (locals.session.user ? locals.session.user.username  : '游客') : '游客'%>
-                </li>
-                <!-- /.dropdown -->
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-user">
-                        <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> 退出</a>
-                        </li>
-                    </ul>
-                    <!-- /.dropdown-user -->
-                </li>
-                <!-- /.dropdown -->
-            </ul>
-            <!-- /.navbar-top-links -->
-
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li>
-                            <a class="active" href="/index"><i class="fa fa-dashboard fa-fw"></i> 首页</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 消息管理 <span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a onclick="getMessagePage('realtime')">实时建议管理</a>
-                                </li>
-                                <li>
-                                    <a onclick="getMessagePage('operation')">操作建议管理</a>
-                                </li>
-                                <li>
-                                    <a onclick="getMessagePage('notice')">公告管理</a>
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 用户管理 <span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a onclick="getCreateUserPage()">用户创建</a>
-                                </li>
-                                <li>
-                                    <a href="#">用户权限</a>
-                                </li>
-                                <li>
-                                    <a href="#">用户状态</a>
-                                </li>
-                            </ul>
-
-                        </li>
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
-        </nav>
-
-        <div id="page-wrapper">
+<div id="wrapper">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/dashboard">银评天下 后台管理系统</a>
         </div>
-        <!-- /#page-wrapper -->
+        <!-- /.navbar-header -->
 
+        <ul class="nav navbar-top-links navbar-right">
+            <li>
+                欢迎, <%= locals.session ? (locals.session.user ? locals.session.user.username : '游客') : '游客' %>
+            </li>
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> 退出</a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-user -->
+            </li>
+            <!-- /.dropdown -->
+        </ul>
+        <!-- /.navbar-top-links -->
+
+        <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li>
+                        <a class="active" href="/index"><i class="fa fa-dashboard fa-fw"></i> 首页</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 消息管理 <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a onclick="getMessagePage('realtime')">实时建议管理</a>
+                            </li>
+                            <li>
+                                <a onclick="getMessagePage('operation')">操作建议管理</a>
+                            </li>
+                            <li>
+                                <a onclick="getMessagePage('notice')">公告管理</a>
+                            </li>
+                        </ul>
+                        <!-- /.nav-second-level -->
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 用户管理 <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a onclick="getCreateUserPage()">用户创建</a>
+                            </li>
+                            <li>
+                                <a href="#">用户权限</a>
+                            </li>
+                            <li>
+                                <a href="#">用户状态</a>
+                            </li>
+                        </ul>
+
+                    </li>
+                </ul>
+            </div>
+            <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+    </nav>
+
+    <div id="page-wrapper">
     </div>
-    <!-- /#wrapper -->
+    <!-- /#page-wrapper -->
 
-    <script src="/javascripts/jquery-1.11.0.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</div>
+<!-- /#wrapper -->
 
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="/javascripts/plugins/metisMenu/metisMenu.min.js"></script>
+<script src="/javascripts/jquery-1.11.0.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
-    <!-- Custom Theme JavaScript -->
-    <script src="/javascripts/sb-admin-2.js"></script>
-    <script src="/javascripts/plugins/alertify.js"></script>
-    <script src="/javascripts/plugins/dataTables/jquery.dataTables.js"></script>
-    <script src="/javascripts/plugins/dataTables/dataTables.bootstrap.js"></script>
-    <script src="//cdn.ckeditor.com/4.4.4/standard/ckeditor.js"></script>
-    <script src="/javascripts/yptx/index.js"></script>
-    </body>
+<!-- Metis Menu Plugin JavaScript -->
+<script src="/javascripts/plugins/metisMenu/metisMenu.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/javascripts/sb-admin-2.js"></script>
+<script src="/javascripts/plugins/alertify.js"></script>
+<script src="/javascripts/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/javascripts/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="//cdn.ckeditor.com/4.4.4/standard/ckeditor.js"></script>
+<script src="/javascripts/yptx/index.js"></script>
+</body>
 </html>
