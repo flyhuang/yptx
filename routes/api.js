@@ -30,7 +30,16 @@ router.get('/messages/:type', function (req, res) {
     } else {
         var page  = req.query.page ? req.query.page : 1;
         var count = req.query.count ? req.query.count : 10;
-        Message.find({ "type": req.params['type']}).paginate(page, count, function (error, messages, total) {
+        var is_lasted = req.query.is_lasted ? req.query.is_lasted : false;
+        var currentTime = req.query.currentDate ? req.query.currentDate : new Date();
+        console.log(currentTime);
+        var query = {};
+        if (is_lasted) {
+            query = { "type": req.params['type'], "update_at": {"$gte": currentTime}};
+        } else {
+            query = { "type": req.params['type'], "update_at": {"$lte": currentTime}};
+        }
+        Message.find(query).paginate(page, count, function (error, messages, total) {
             if (error) return res.json({"success": false});
             return res.json({
                 "success": true,
