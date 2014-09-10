@@ -77,8 +77,8 @@ app.use(function (err, req, res, next) {
 
 // Config mongoose connection
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/yptx'); // connect to our database
-//mongoose.connect('mongodb://wade:wow520@kahana.mongohq.com:10045/yptx'); // connect to our database
+//mongoose.connect('mongodb://localhost:27017/yptx'); // connect to our database
+mongoose.connect('mongodb://wade:wow520@kahana.mongohq.com:10045/yptx'); // connect to our database
 
 module.exports = app;
 
