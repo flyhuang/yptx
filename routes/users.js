@@ -16,7 +16,25 @@ router.get('/login', function (req, res) {
 
 // Create User Page
 router.get('/user/create', function (req, res, next) {
-    res.render('createuser', {'active': 'createUser'});
+    res.render('createuser');
+});
+
+// Edit User Page
+router.get('/user/edit/:id', function (req, res, next) {
+    var id = req.params["id"];
+    User.findOne({_id: id}, function (err, user) {
+        console.log(user);
+        res.render('edituser', {
+            "username": user.username,
+            "is_admin": user.is_admin,
+            "id": id
+        });
+    });
+});
+
+// User List Page
+router.get('/user/list', function (req, res, next) {
+    res.render('userlist')
 });
 
 module.exports = router;

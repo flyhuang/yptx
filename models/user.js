@@ -4,10 +4,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    username: { type: String, index: true},
+    username: { type: String, index: true },
     password: String,
     avatar: String,
-    update_at: { type: Date, default: Date.now },
+    update_at: { type: Date, default: Date.now},
     is_admin: Boolean,
     permission_list: Array,
     status: String

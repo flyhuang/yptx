@@ -39,7 +39,7 @@ router.get('/messages/:type', function (req, res) {
         } else {
             query = { "type": req.params['type'], "update_at": {"$lte": currentTime}};
         }
-        Message.find(query).paginate(page, count, function (error, messages, total) {
+        Message.find(query, null, {sort: {update_at: -1}}).paginate(page, count, function (error, messages, total) {
             if (error) return res.json({"success": false});
             return res.json({
                 "success": true,
@@ -94,6 +94,7 @@ router.post('/login', function (req, res) {
     console.log("Rquest to login");
     var name = req.body.username;
     var pass = req.body.password;
+    var isAdmin = req.body.is_admin;
     if (_.isEmpty(name) || _.isEmpty(pass)) {
         res.json({
             success: false,
@@ -108,13 +109,21 @@ router.post('/login', function (req, res) {
         if (err)
             res.send(err);
         console.log(userDetails);
-        ytHelper.popSession(userDetails, res, req);
-        if (!userDetails) {
+        if (userDetails.length <= 0) {
             return res.json({
                 success: false,
                 msg: "请输入正确的用户名或者密码"
             })
         }
+        if (isAdmin) {
+            if (!userDetails.is_admin) {
+                return res.json({
+                    success: false,
+                    msg: "没有权限登陆, 请联系管理员!"
+                })
+            }
+        }
+        ytHelper.popSession(userDetails, res, req);
         return res.json({
             success: true,
             user: userDetails
@@ -144,6 +153,75 @@ router.get('/logout', function (req, res) {
         success: true,
         msg: 'Logout success!'
     });
+});
+
+
+router.get('/user/list', function (req, res) {
+    User.find({}).sort('-update_at').exec(function(err, userList) {
+        if (err)
+            res.json({"success": false, "message": "查询用户失败"});
+        var resList = [];
+        for (var i = 0; i < userList.length; i++) {
+            var user = userList[i];
+            var userResult = [];
+            userResult.push(user.username);
+            userResult.push(user.update_at);
+            userResult.push("<a onclick='getEditUserPage(\"" + user.id + "\")'>修改</a>");
+            userResult.push("<a onclick='deleteUser(\"" + user.id + "\")'>删除</a>");
+            if (user.status == 'online') {
+                userResult.push("在线");
+            } else if (user.status == 'offline') {
+                userResult.push("离线");
+            } else {
+                userResult.push("未知");
+            }
+            userResult.push(user.is_admin);
+            resList.push(userResult);
+        }
+        return res.json({
+            "success": true,
+            "data": resList
+        });
+    });
+});
+
+router.delete('/delete/user/:id', function(req, res){
+    User.where().findOneAndRemove({ _id: req.params["id"]}, function (error, callback) {
+        if (error) return res.json({"success": false});
+        res.json({"success": true, "msg": "删除成功"});
+    });
+});
+
+router.post('/update/user/:id', function(req, res) {
+    var id = req.params['id'];
+    var password = ytHelper.md5(req.body.password);
+    var is_admin = req.body.is_admin;
+    User.findOneAndUpdate({_id: id}, {password: password, is_admin: is_admin}, function (err, user) {
+        if (err)
+            return res.json({"success": false, "msg": "更新用户信息失败"});
+        return res.json({ "success": true });
+    });
+});
+
+router.post('/user/changepassword/:id', function (req, res) {
+    var id = req.params['id'];
+    var old_password = req.body.oldPassword;
+    var new_password = req.body.newPassword;
+    if (_.isEmpty(new_password)) {
+        return res.json({"success": false, "msg": "新密码不能为空"});
+    }
+    User.find({_id: id}, function(err, user) {
+        if (err) return res.json({"success": false, "msg": "更新用户信息失败"});
+        if (user.password != ytHelper.md5(old_password)) {
+            return res.json({"success": false, "msg": "密码不正确"});
+        }
+        user.password = ytHelper.md5(new_password);
+        user.save(function (err) {
+            if (err)
+                return res.json({"success": false, "message": "修改密码失败"});
+            return res.json({ "success": true, "msg": "密码更新成功" });
+        });
+    })
 });
 
 module.exports = router;
