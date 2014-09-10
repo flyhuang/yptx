@@ -31,7 +31,7 @@ function getCreateMessagePage(type) {
         type: "get",
         success: function (res) {
             $("#page-wrapper").html(res);
-            CKEDITOR.replace( 'msgContent' );
+            CKEDITOR.replace('msgContent');
         }
     })
 }
@@ -43,10 +43,9 @@ function getEditMsgPage(id) {
         type: "get",
         success: function (res) {
             $("#page-wrapper").html(res);
-            CKEDITOR.replace( 'msgContent' );
+            CKEDITOR.replace('msgContent');
         }
     })
-
 }
 
 // Page request end...
@@ -69,7 +68,6 @@ function deleteMsg(messageid) {
         }
     })
 }
-
 
 
 function createUser() {
