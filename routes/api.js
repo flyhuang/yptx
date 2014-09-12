@@ -5,8 +5,10 @@ var express = require('express'),
     Message = require('../models/message'),
     _ = require('underscore'),
     Permission = require('../models/permission'),
-    router = express.Router();
+    router = express.Router(),
+    JPush = require("jpush-sdk");
 
+var client = JPush.buildClient('a13e1db90e37e020e545d540', 'da08e43c8d6aff997ffe79bd');
 
 // Get messages
 router.get('/messages/:type', function (req, res) {
@@ -64,7 +66,8 @@ router.put('/messages/create/:type', function (req, res, next) {
     message.save(function (err) {
         if (err)
             res.json({"success": false, "message": "创建消息失败"});
-        res.json({ "success": true });
+        pushMsgToAPP(message.id, message.title, message.type);
+        return res.json({ "success": true });
     })
 });
 
@@ -143,8 +146,8 @@ router.post('/createuser', function (req, res) {
     // save the bear and check for errors
     user.save(function (err) {
         if (err)
-            res.json({"success": false, "message": "创建用户失败"});
-        res.json({ "success": true });
+            return res.json({"success": false, "message": "创建用户失败"});
+        return res.json({ "success": true });
     });
 });
 
@@ -259,5 +262,23 @@ router.post('/permission', function (req, res) {
     return res.json({ "success": true });
 
 });
+
+function pushMsgToAPP(messageID, messageTitle, messageType) {
+    client.push().setPlatform(JPush.ALL)
+        .setAudience(JPush.ALL)
+        .setNotification('银评天下消息提醒', JPush.android('银评天下', messageTitle, 5, {"messageid": messageID, "messageType": messageType}))
+        .send(function(err, res) {
+            if (err) {
+                if (err instanceof JPush.APIConnectionError) {
+                    console.log(err.message);
+                } else if (err instanceof  JPush.APIRequestError) {
+                    console.log(err.message);
+                }
+            } else {
+                console.log('Sendno: ' + res.sendno);
+                console.log('Msg_id: ' + res.msg_id);
+            }
+        });
+}
 
 module.exports = router;
