@@ -168,12 +168,26 @@ router.post('/createuser', function (req, res) {
     user.password = req.body.password;
     user.is_admin = req.body.is_admin;
 
-    // save the bear and check for errors
-    user.save(function (err) {
-        if (err)
-            return res.json({"success": false, "message": "创建用户失败"});
-        console.log("New user - %s:%s",user.username,user.password);
-        return res.json({ "success": true });
+    if (_.isEmpty(user.username)) {
+        return res.json({"success":false, "msg":"用户名不能为空"});
+    }
+
+    if (_.isEmpty(user.password)) {
+        return res.json({"success":false, "msg":"密码不能为空"});
+    }
+
+    user.findUserByName(function(err, userList) {
+        if (err) return res.json({"success": false, "msg": "创建用户失败"});
+        if (userList.length > 0) {
+            return res.json({"success": false, "msg": "用户名已存在"});
+        }
+        // save the bear and check for errors
+        user.save(function (err) {
+            if (err)
+                return res.json({"success": false, "message": "创建用户失败"});
+            console.log("New user - %s:%s",user.username,user.password);
+            return res.json({ "success": true });
+        });
     });
 });
 
