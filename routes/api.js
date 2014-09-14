@@ -51,17 +51,25 @@ router.get('/messages/:type', function (req, res) {
         } else {
             query = { "type": req.params['type'], "update_at": {"$lte": currentTime}};
         }
-        Message.find(query, null, {sort: {update_at: -1}}).paginate(page, count, function (error, messages, total) {
+        Message.find(query, 'type content title update_at', {sort: {update_at: -1}}).paginate(page, count, function (error, messages, total) {
             if (error) return res.json({"success": false});
             return res.json({
                 "success": true,
-                "data": messages,
-                "total": total,
-                "page": page,
-                "count": messages.length
+                "data": messages
             });
         })
     }
+});
+
+router.get('/message/:id', function (req, res, next) {
+    var id = req.params["id"];
+    Message.findOne({_id: id}, 'type content title update_at', function (err, message) {
+        if (err) return res.json({"success": false});
+        return res.json({
+            "success": true,
+            "data": message
+        });
+    });
 });
 
 // Create messages

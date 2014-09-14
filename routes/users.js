@@ -21,6 +21,12 @@ router.get('/login', function (req, res) {
     return res.render('login');
 });
 
+// Save token
+router.post('/store/token', function(req, res) {
+    ytHelper.addAccessTokenIntoSession(req, res);
+    return res.json({'success': true});
+});
+
 // Create User Page
 router.get('/user/create', function (req, res, next) {
     res.render('createuser');

@@ -105,12 +105,19 @@ _.extend(yptxHelper.prototype, {
         }
     },
 
-    addAccessTokenIntoSession: function (req, res, accessToken, next) {
+    addAccessTokenIntoSession: function (req, res, next) {
+        var accessToken = req.body.access_token;
+        var refreshToken = req.body.refresh_token;
         console.log(accessToken);
         if (accessToken) {
             req.session.accessToken = accessToken;
-            return next;
         }
+
+        if (refreshToken) {
+            req.session.refreshToken = refreshToken;
+        }
+
+        req.session.save();
     }
 });
 
