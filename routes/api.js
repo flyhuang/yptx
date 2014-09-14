@@ -104,7 +104,7 @@ router.delete('/messages/delete/:messageid', function (req, res, next) {
 
 
 // Login API
-router.post('/login', passport.authenticate('basic'), function (req, res) {
+router.post('/login', function (req, res) {
     console.log("Rquest to login");
     var name = req.body.username;
     var pass = req.body.password;
