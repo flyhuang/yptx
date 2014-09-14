@@ -242,10 +242,10 @@ router.post('/user/changepassword/:id', function (req, res) {
     }
     User.find({_id: id}, function (err, user) {
         if (err) return res.json({"success": false, "msg": "更新用户信息失败"});
-        if (user.password != ytHelper.md5(old_password)) {
+        if (!user.checkPassword(old_password)) {
             return res.json({"success": false, "msg": "密码不正确"});
         }
-        user.password = ytHelper.md5(new_password);
+        user.password = new_password;
         user.save(function (err) {
             if (err)
                 return res.json({"success": false, "message": "修改密码失败"});
