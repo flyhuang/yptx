@@ -4,12 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var session = require('express-session')
+var session = require('express-session');
+var passport        = require('passport');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var messages = require('./routes/messages');
+
+//require("./datagen");
 // var redis = require('redis');
 
 //var db = redis.createClient(port, "pub-redis-15095.us-east-1-3.1.ec2.garantiadata.com:15095");
@@ -18,6 +21,8 @@ var messages = require('./routes/messages');
 
 
 var app = express();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,6 +36,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(session({
     resave: false, // don't save session if unmodified
@@ -83,7 +90,7 @@ mongoose.connect('mongodb://wade:wow520@kahana.mongohq.com:10045/yptx'); // conn
 module.exports = app;
 
 var port = process.env.PORT || 8080; 		// set our port
-// START THE SERVER
+//
 // =============================================================================
 app.listen(port);
 console.log('Magic happens on port ' + port);

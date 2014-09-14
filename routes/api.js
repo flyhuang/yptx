@@ -1,4 +1,6 @@
 require('mongoose-pagination');
+require('../libs/auth');
+
 var express = require('express'),
     User = require('../models/user'),
     ytHelper = require('../common/yptxHelper'),
@@ -6,9 +8,16 @@ var express = require('express'),
     _ = require('underscore'),
     Permission = require('../models/permission'),
     router = express.Router(),
-    JPush = require("jpush-sdk");
+    JPush = require("jpush-sdk"),
+    passport = require('passport'),
+    oauth2 = require('../libs/oauth2');
 
 var client = JPush.buildClient('a13e1db90e37e020e545d540', 'da08e43c8d6aff997ffe79bd');
+
+
+router.get('/', passport.authenticate('bearer'), function (req, res) {
+    res.send('API is running');
+});
 
 // Get messages
 router.get('/messages/:type', function (req, res) {
@@ -31,7 +40,7 @@ router.get('/messages/:type', function (req, res) {
             });
         })
     } else {
-        var page  = req.query.page ? req.query.page : 1;
+        var page = req.query.page ? req.query.page : 1;
         var count = req.query.count ? req.query.count : 10;
         var is_lasted = req.query.is_lasted ? req.query.is_lasted : false;
         var currentTime = req.query.currentDate ? req.query.currentDate : new Date();
@@ -93,8 +102,9 @@ router.delete('/messages/delete/:messageid', function (req, res, next) {
 });
 
 
+
 // Login API
-router.post('/login', function (req, res) {
+router.post('/login', passport.authenticate('basic'), function (req, res) {
     console.log("Rquest to login");
     var name = req.body.username;
     var pass = req.body.password;
@@ -107,13 +117,19 @@ router.post('/login', function (req, res) {
             pass: pass
         });
     }
-    pass = ytHelper.md5(pass);
+
     var user = new User({"username": name, "password": pass});
-    user.login(function (err, userDetails) {
+    user.findUserByName(function (err, userDetails) {
         if (err)
-            res.send(err);
+            return res.send(err);
         console.log(userDetails);
         if (userDetails.length <= 0) {
+            return res.json({
+                success: false,
+                msg: "该用户不存在"
+            })
+        }
+        if (!user.checkPassword(user.password)) {
             return res.json({
                 success: false,
                 msg: "请输入正确的用户名或者密码"
@@ -141,12 +157,14 @@ router.post('/createuser', function (req, res) {
     //TODO Validation
     var user = new User(); 		// create a new instance of the Bear model
     user.username = req.body.username;  // set the bears name (comes from the request)
-    user.password = ytHelper.md5(req.body.password);
+    user.password = req.body.password;
     user.is_admin = req.body.is_admin;
+
     // save the bear and check for errors
     user.save(function (err) {
         if (err)
             return res.json({"success": false, "message": "创建用户失败"});
+        console.log("New user - %s:%s",user.username,user.password);
         return res.json({ "success": true });
     });
 });
@@ -161,7 +179,7 @@ router.get('/logout', function (req, res) {
 
 
 router.get('/user/list', function (req, res) {
-    User.find({}).sort('-update_at').exec(function(err, userList) {
+    User.find({}).sort('-update_at').exec(function (err, userList) {
         if (err)
             res.json({"success": false, "message": "查询用户失败"});
         var resList = [];
@@ -189,14 +207,14 @@ router.get('/user/list', function (req, res) {
     });
 });
 
-router.delete('/delete/user/:id', function(req, res){
+router.delete('/delete/user/:id', function (req, res) {
     User.where().findOneAndRemove({ _id: req.params["id"]}, function (error, callback) {
         if (error) return res.json({"success": false});
         res.json({"success": true, "msg": "删除成功"});
     });
 });
 
-router.post('/update/user/:id', function(req, res) {
+router.post('/update/user/:id', function (req, res) {
     var id = req.params['id'];
     var password = ytHelper.md5(req.body.password);
     var is_admin = req.body.is_admin;
@@ -214,7 +232,7 @@ router.post('/user/changepassword/:id', function (req, res) {
     if (_.isEmpty(new_password)) {
         return res.json({"success": false, "msg": "新密码不能为空"});
     }
-    User.find({_id: id}, function(err, user) {
+    User.find({_id: id}, function (err, user) {
         if (err) return res.json({"success": false, "msg": "更新用户信息失败"});
         if (user.password != ytHelper.md5(old_password)) {
             return res.json({"success": false, "msg": "密码不正确"});
@@ -229,16 +247,16 @@ router.post('/user/changepassword/:id', function (req, res) {
 });
 
 router.get('/permission', function (req, res) {
-    Permission.find({}, function(err, permissions) {
-        if (err) return res.json({"success" : false});
-        var forbid_dict = {"realtime": false, "operation": false, "notice":false};
-        for (var i = 0; i < permissions.length; i ++) {
+    Permission.find({}, function (err, permissions) {
+        if (err) return res.json({"success": false});
+        var forbid_dict = {"realtime": false, "operation": false, "notice": false};
+        for (var i = 0; i < permissions.length; i++) {
             var permission = permissions[i];
             if (permission.message_type != undefined) {
                 forbid_dict[permission.message_type] = permission.is_forbid;
             }
         }
-        return res.json({forbid_dict : forbid_dict, success: true})
+        return res.json({forbid_dict: forbid_dict, success: true})
     });
 });
 
@@ -247,15 +265,15 @@ router.post('/permission', function (req, res) {
     var operation = req.body.operation;
     var notice = req.body.notice;
     var permission = {
-        "realtime":realtime,
-        "operation":operation,
-        "notice":notice
+        "realtime": realtime,
+        "operation": operation,
+        "notice": notice
     };
     var permissionList = ['realtime', 'operation', 'notice'];
-    for (var i = 0; i < permissionList.length; i ++) {
+    for (var i = 0; i < permissionList.length; i++) {
         var query = {'message_type': permissionList[i]};
         var updateParams = {'is_forbid': permission[permissionList[i]]};
-        Permission.findOneAndUpdate(query, updateParams, {'upsert':true}, function (err, permission) {
+        Permission.findOneAndUpdate(query, updateParams, {'upsert': true}, function (err, permission) {
             if (err) console.log("更新权限失败");
         });
     }
@@ -267,7 +285,7 @@ function pushMsgToAPP(messageID, messageTitle, messageType) {
     client.push().setPlatform(JPush.ALL)
         .setAudience(JPush.ALL)
         .setNotification('银评天下消息提醒', JPush.android('银评天下', messageTitle, 5, {"messageid": messageID, "messageType": messageType}))
-        .send(function(err, res) {
+        .send(function (err, res) {
             if (err) {
                 if (err instanceof JPush.APIConnectionError) {
                     console.log(err.message);

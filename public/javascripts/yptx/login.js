@@ -1,3 +1,14 @@
+//function login() {
+//    $.ajax({
+//        url: "/oauth/token",
+//        datatype: "json",
+//        type: "POST",
+//        data: {"username": $("input[name='username']").val(), "client_id":"yptx", "client_secret":"yptx", "password": $("input[name='password']").val(), "is_admin": true, "grant_type": "password"},
+//        success: function (res) {
+//            window.location = "/dashboard";
+//        }
+//    })
+//}
 function login() {
     $.ajax({
         url: "/api/login",

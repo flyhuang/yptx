@@ -3,16 +3,22 @@ var express = require('express'),
     ytHelper = require('../common/yptxHelper'),
     _ = require('underscore'),
     router = express.Router(),
-    Permission = require('../models/permission');
+    Permission = require('../models/permission'),
+    oauth2 = require('../libs/oauth2');
 
 // redirect login page.
 router.get('/', function (req, res) {
     res.redirect('login');
 });
 
+router.post('/oauth/token', oauth2.token);
+
 // Login Page
 router.get('/login', function (req, res) {
-    res.render('login');
+    if (req.session.user) {
+        return res.redirect('/dashboard');
+    }
+    return res.render('login');
 });
 
 // Create User Page
@@ -38,7 +44,6 @@ router.get('/user/list', function (req, res, next) {
     res.render('userlist')
 });
 
-
 router.get('/user/permission', function (req, res, next) {
     Permission.find({}, function(err, permissions) {
         if (err) return res.json({"success" : false});
@@ -49,7 +54,6 @@ router.get('/user/permission', function (req, res, next) {
         }
         return res.render('permission', {forbid_dict : forbid_dict})
     });
-
 });
 
 module.exports = router;

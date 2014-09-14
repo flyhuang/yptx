@@ -103,6 +103,14 @@ _.extend(yptxHelper.prototype, {
             req.session.error = 'Access denied!';
             return res.redirect('/login');
         }
+    },
+
+    addAccessTokenIntoSession: function (req, res, accessToken, next) {
+        console.log(accessToken);
+        if (accessToken) {
+            req.session.accessToken = accessToken;
+            return next;
+        }
     }
 });
 
