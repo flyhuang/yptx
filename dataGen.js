@@ -5,7 +5,7 @@ var AccessTokenModel        = require('./models/accessToken');
 var RefreshTokenModel       = require('./models/refreshToken');
 
 UserModel.remove({}, function(err) {
-    var user = new UserModel({ username: "yptx", password: "yptx" });
+    var user = new UserModel({ username: "yptx", password: "yptx", is_admin: true});
     user.save(function(err, user) {
         if(err) return console.log(err);
         else console.log("New user - %s:%s",user.username,user.password);

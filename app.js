@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var passport        = require('passport');
+var passport = require('passport');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -21,7 +21,6 @@ var messages = require('./routes/messages');
 
 
 var app = express();
-
 
 
 // view engine setup
@@ -89,7 +88,7 @@ mongoose.connect('mongodb://wade:wow520@kahana.mongohq.com:10045/yptx'); // conn
 
 module.exports = app;
 
-var port = process.env.PORT || 8080; 		// set our port
+var port = process.env.PORT || 8080; // set our port
 //
 // =============================================================================
 app.listen(port);

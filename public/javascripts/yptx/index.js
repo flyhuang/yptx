@@ -1,18 +1,25 @@
 var currentDataTable;
 
 // Page Request...
-function getCreateUserPage() {
+function getCreateUserPage(self) {
+    remove();
+    $(self).addClass('active');
     $.ajax({
         url: "/user/create",
         datatype: "text/html",
         type: "get",
         success: function (res) {
             $("#page-wrapper").html(res);
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
 
-function getMessagePage(type) {
+function getMessagePage(type, self) {
+    remove();
+    $(self).addClass('active');
     $.ajax({
         url: "/messages/" + type,
         datatype: "text/html",
@@ -20,6 +27,9 @@ function getMessagePage(type) {
         success: function (res) {
             $("#page-wrapper").html(res);
             initMsgDataTable(type);
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -32,11 +42,16 @@ function getCreateMessagePage(type) {
         success: function (res) {
             $("#page-wrapper").html(res);
             CKEDITOR.replace('msgContent');
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
 
-function getUserListPage() {
+function getUserListPage(self) {
+    remove();
+    $(self).addClass('active');
     $.ajax({
         url: "/user/list",
         datatype: "text/html",
@@ -44,6 +59,9 @@ function getUserListPage() {
         success: function (res) {
             $("#page-wrapper").html(res);
             initUserDataTable();
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -55,6 +73,9 @@ function getEditUserPage(id) {
         type: "get",
         success: function (res) {
             $("#page-wrapper").html(res);
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -67,17 +88,25 @@ function getEditMsgPage(id) {
         success: function (res) {
             $("#page-wrapper").html(res);
             CKEDITOR.replace('msgContent');
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
 
-function getPermissionPage() {
+function getPermissionPage(self) {
+    remove();
+    $(self).addClass('active');
     $.ajax({
         url: "/user/permission",
         datatype: "text/html",
         type: "get",
         success: function (res) {
             $("#page-wrapper").html(res);
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -99,6 +128,9 @@ function deleteMsg(messageid) {
             } else {
                 alertify.error("删除失败!");
             }
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -116,6 +148,9 @@ function createUser() {
             } else {
                 alertify.error(res.msg);
             }
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -134,6 +169,9 @@ function createMessage(type) {
             } else {
                 alertify.error(res.msg);
             }
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -152,6 +190,9 @@ function updateMessage(id) {
             } else {
                 alertify.error(res.msg);
             }
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -168,6 +209,9 @@ function deleteUser(id) {
             } else {
                 alertify.error("删除失败!");
             }
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -184,6 +228,9 @@ function updateUser(id) {
             } else {
                 alertify.error(res.msg);
             }
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -200,6 +247,9 @@ function updatePermission() {
             } else {
                 alertify.error(res.msg);
             }
+        },
+        error: function (res) {
+            window.location = "/login";
         }
     })
 }
@@ -248,4 +298,8 @@ function initUserDataTable() {
         "bRetrieve": true,
         "ajax": "/api/user/list"
     });
+}
+
+function remove() {
+    $("a[class='active']").removeClass('active');
 }

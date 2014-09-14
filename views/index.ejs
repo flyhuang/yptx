@@ -94,13 +94,13 @@
                         <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 消息管理 <span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a onclick="getMessagePage('realtime')">实时建议管理</a>
+                                <a onclick="getMessagePage('realtime', this)">实时建议管理</a>
                             </li>
                             <li>
-                                <a onclick="getMessagePage('operation')">操作建议管理</a>
+                                <a onclick="getMessagePage('operation', this)">操作建议管理</a>
                             </li>
                             <li>
-                                <a onclick="getMessagePage('notice')">公告管理</a>
+                                <a onclick="getMessagePage('notice', this)">公告管理</a>
                             </li>
                         </ul>
                         <!-- /.nav-second-level -->
@@ -109,13 +109,13 @@
                         <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 用户管理 <span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a onclick="getCreateUserPage()">用户创建</a>
+                                <a onclick="getCreateUserPage(this)">用户创建</a>
                             </li>
                             <li>
-                                <a onclick="getPermissionPage()">游客权限设置</a>
+                                <a onclick="getPermissionPage(this)">游客权限设置</a>
                             </li>
                             <li>
-                                <a onclick="getUserListPage()">用户状态</a>
+                                <a onclick="getUserListPage(this)">用户状态</a>
                             </li>
                         </ul>
 
@@ -128,6 +128,7 @@
     </nav>
 
     <div id="page-wrapper">
+        <div>欢迎来到 银评天下后台管理系统</div>
     </div>
     <!-- /#page-wrapper -->
 
