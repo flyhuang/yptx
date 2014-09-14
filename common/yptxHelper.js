@@ -101,6 +101,10 @@ _.extend(yptxHelper.prototype, {
             return next();
         } else {
             req.session.error = 'Access denied!';
+            if (req.xhr) {
+
+                return res.status('403').json({success:false, msg: "Access denied!"});
+            }
             return res.redirect('/login');
         }
     },

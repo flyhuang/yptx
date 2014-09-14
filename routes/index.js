@@ -4,7 +4,7 @@ var ytHelper = require('../common/yptxHelper');
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', ytHelper.restrict, function (req, res, next) {
     return res.render('index', { title: 'Express' });
 });
 

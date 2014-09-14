@@ -254,6 +254,20 @@ function updatePermission() {
     })
 }
 
+function logout() {
+    $.ajax({
+        url: "/api/logout",
+        datatype: "json",
+        type: "get",
+        success: function (res) {
+            window.location = "/login";
+        },
+        error: function (res) {
+            window.location = "/login";
+        }
+    })
+}
+
 // API END
 
 
