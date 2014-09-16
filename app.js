@@ -11,6 +11,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var messages = require('./routes/messages');
+var adminApi = require('./routes/adminApi');
 
 //require("./datagen");
 // var redis = require('redis');
@@ -21,7 +22,6 @@ var messages = require('./routes/messages');
 
 
 var app = express();
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -47,6 +47,7 @@ app.use(session({
 
 app.use('/dashboard', routes);
 app.use('/api', api);
+app.use('/admin/api', adminApi);
 app.use('/messages', messages);
 app.use('/', users);
 

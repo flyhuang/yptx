@@ -15,55 +15,36 @@ var express = require('express'),
 var client = JPush.buildClient('a13e1db90e37e020e545d540', 'da08e43c8d6aff997ffe79bd');
 
 
-router.get('/', passport.authenticate('bearer'), function (req, res) {
+router.get('/', passport.authenticate('bearer', { session: false }), function (req, res) {
     res.send('API is running');
 });
 
 // Get messages
-router.get('/messages/:type', function (req, res) {
-    if (req.query.is_admin_request) {
-        Message.find({ "type": req.params['type']}, function (error, messages) {
-            if (error) return res.json({"success": false});
-            var messageList = [];
-            for (var i = 0; i < messages.length; i++) {
-                var message = messages[i];
-                var messageResult = [];
-                messageResult.push(message.title);
-                messageResult.push(message.update_at);
-                messageResult.push("<a onclick='getEditMsgPage(\"" + message.id + "\")'>修改</a>");
-                messageResult.push("<a onclick='deleteMsg(\"" + message.id + "\")'>删除</a>");
-                messageList.push(messageResult);
-            }
-            return res.json({
-                "success": true,
-                "data": messageList
-            });
-        })
+router.get('/messages/:type', [passport.authenticate('bearer', { session: false }), ytHelper.checkPermission], function (req, res) {
+    var page = req.query.page ? req.query.page : 1;
+    var count = req.query.count ? req.query.count : 10;
+    var is_lasted = req.query.is_lasted ? req.query.is_lasted : false;
+    var currentTime = req.query.currentDate ? req.query.currentDate : new Date();
+    console.log(currentTime);
+    var query = {};
+    if (is_lasted) {
+        query = { "type": req.params['type'], "update_at": {"$gte": currentTime}};
     } else {
-        var page = req.query.page ? req.query.page : 1;
-        var count = req.query.count ? req.query.count : 10;
-        var is_lasted = req.query.is_lasted ? req.query.is_lasted : false;
-        var currentTime = req.query.currentDate ? req.query.currentDate : new Date();
-        console.log(currentTime);
-        var query = {};
-        if (is_lasted) {
-            query = { "type": req.params['type'], "update_at": {"$gte": currentTime}};
-        } else {
-            query = { "type": req.params['type'], "update_at": {"$lte": currentTime}};
-        }
-        Message.find(query, 'type content title update_at', {sort: {update_at: -1}}).paginate(page, count, function (error, messages, total) {
-            if (error) return res.json({"success": false});
-            return res.json({
-                "success": true,
-                "data": messages
-            });
-        })
+        query = { "type": req.params['type'], "update_at": {"$lte": currentTime}};
     }
+    Message.find(query, 'type content title update_at', {sort: {update_at: -1}}).paginate(page, count, function (error, messages, total) {
+        if (error) return res.json({"success": false});
+        return res.json({
+            "success": true,
+            "data": messages
+        });
+    })
 });
 
-router.get('/message/:id', function (req, res, next) {
+router.get('/message/:type/:id/', [passport.authenticate('bearer', { session: false }) , ytHelper.checkPermission], function (req, res, next) {
     var id = req.params["id"];
-    Message.findOne({_id: id}, 'type content title update_at', function (err, message) {
+    var type = req.params["type"];
+    Message.findOne({_id: id, type: type}, 'type content title update_at', function (err, message) {
         if (err) return res.json({"success": false});
         return res.json({
             "success": true,
@@ -73,41 +54,41 @@ router.get('/message/:id', function (req, res, next) {
 });
 
 // Create messages
-router.put('/messages/create/:type', function (req, res, next) {
-    var title = req.body.title;
-    var content = req.body.content;
-    var message = new Message();
-    message.title = title;
-    message.content = content;
-    message.type = req.params['type'];
-    message.save(function (err) {
-        if (err)
-            res.json({"success": false, "message": "创建消息失败"});
-        pushMsgToAPP(message.id, message.title, message.type);
-        return res.json({ "success": true });
-    })
-});
+//router.put('/messages/create/:type', function (req, res, next) {
+//    var title = req.body.title;
+//    var content = req.body.content;
+//    var message = new Message();
+//    message.title = title;
+//    message.content = content;
+//    message.type = req.params['type'];
+//    message.save(function (err) {
+//        if (err)
+//            res.json({"success": false, "message": "创建消息失败"});
+//        pushMsgToAPP(message.id, message.title, message.type);
+//        return res.json({ "success": true });
+//    })
+//});
 
 // Update messages
-router.post('/messages/update/:id', function (req, res, next) {
-    var id = req.params['id'];
-    var title = req.body.title;
-    var content = req.body.content;
-    Message.findOneAndUpdate({_id: id}, {title: title, content: content}, function (err, message) {
-        if (err)
-            return res.json({"success": false, "message": "更新消息失败"});
-        return res.json({ "success": true });
-    });
-});
+//router.post('/messages/update/:id', function (req, res, next) {
+//    var id = req.params['id'];
+//    var title = req.body.title;
+//    var content = req.body.content;
+//    Message.findOneAndUpdate({_id: id}, {title: title, content: content}, function (err, message) {
+//        if (err)
+//            return res.json({"success": false, "message": "更新消息失败"});
+//        return res.json({ "success": true });
+//    });
+//});
 
 
 // Delete messages
-router.delete('/messages/delete/:messageid', function (req, res, next) {
-    Message.where().findOneAndRemove({ _id: req.params["messageid"]}, function (error, callback) {
-        if (error) return res.json({"success": false});
-        res.json({"success": true, "msg": "删除成功"});
-    })
-});
+//router.delete('/messages/delete/:messageid', function (req, res, next) {
+//    Message.where().findOneAndRemove({ _id: req.params["messageid"]}, function (error, callback) {
+//        if (error) return res.json({"success": false});
+//        res.json({"success": true, "msg": "删除成功"});
+//    })
+//});
 
 
 
@@ -152,46 +133,50 @@ router.post('/login', function (req, res) {
             }
         }
         ytHelper.popSession(userDetails, res, req);
-        return res.json({
-            success: true,
-            user: userDetails
+        User.findOneAndUpdate({_id: userDetails[0].id}, {'status':'在线'}, function(err, result) {
+            if (err) return res.json({success:false, msg:'登陆失败'});
+
+            return res.json({
+                success: true,
+                user: userDetails
+            });
         });
     });
 });
 
 
 //Create user api
-router.post('/createuser', function (req, res) {
-    //TODO Validation
-    var user = new User(); 		// create a new instance of the Bear model
-    user.username = req.body.username;  // set the bears name (comes from the request)
-    user.password = req.body.password;
-    user.is_admin = req.body.is_admin;
+//router.post('/createuser', function (req, res) {
+//    //TODO Validation
+//    var user = new User(); 		// create a new instance of the Bear model
+//    user.username = req.body.username;  // set the bears name (comes from the request)
+//    user.password = req.body.password;
+//    user.is_admin = req.body.is_admin;
+//
+//    if (_.isEmpty(user.username)) {
+//        return res.json({"success":false, "msg":"用户名不能为空"});
+//    }
+//
+//    if (_.isEmpty(user.password)) {
+//        return res.json({"success":false, "msg":"密码不能为空"});
+//    }
+//
+//    user.findUserByName(function(err, userList) {
+//        if (err) return res.json({"success": false, "msg": "创建用户失败"});
+//        if (userList.length > 0) {
+//            return res.json({"success": false, "msg": "用户名已存在"});
+//        }
+//        // save the bear and check for errors
+//        user.save(function (err) {
+//            if (err)
+//                return res.json({"success": false, "message": "创建用户失败"});
+//            console.log("New user - %s:%s",user.username,user.password);
+//            return res.json({ "success": true });
+//        });
+//    });
+//});
 
-    if (_.isEmpty(user.username)) {
-        return res.json({"success":false, "msg":"用户名不能为空"});
-    }
-
-    if (_.isEmpty(user.password)) {
-        return res.json({"success":false, "msg":"密码不能为空"});
-    }
-
-    user.findUserByName(function(err, userList) {
-        if (err) return res.json({"success": false, "msg": "创建用户失败"});
-        if (userList.length > 0) {
-            return res.json({"success": false, "msg": "用户名已存在"});
-        }
-        // save the bear and check for errors
-        user.save(function (err) {
-            if (err)
-                return res.json({"success": false, "message": "创建用户失败"});
-            console.log("New user - %s:%s",user.username,user.password);
-            return res.json({ "success": true });
-        });
-    });
-});
-
-router.get('/logout', function (req, res) {
+router.get('/logout', passport.authenticate('bearer', { session: false }), function (req, res) {
     ytHelper.clearCookieAndSession(res, req);
     res.send({
         success: true,
@@ -200,7 +185,7 @@ router.get('/logout', function (req, res) {
 });
 
 
-router.get('/user/list', function (req, res) {
+router.get('/user/list', passport.authenticate('bearer', { session: false }), function (req, res) {
     User.find({}).sort('-update_at').exec(function (err, userList) {
         if (err)
             res.json({"success": false, "message": "查询用户失败"});
@@ -229,25 +214,29 @@ router.get('/user/list', function (req, res) {
     });
 });
 
-router.delete('/delete/user/:id', function (req, res) {
-    User.where().findOneAndRemove({ _id: req.params["id"]}, function (error, callback) {
-        if (error) return res.json({"success": false});
-        res.json({"success": true, "msg": "删除成功"});
-    });
-});
+//router.delete('/delete/user/:id', function (req, res) {
+//    User.where().findOneAndRemove({ _id: req.params["id"]}, function (error, callback) {
+//        if (error) return res.json({"success": false});
+//        res.json({"success": true, "msg": "删除成功"});
+//    });
+//});
 
-router.post('/update/user/:id', function (req, res) {
-    var id = req.params['id'];
-    var password = ytHelper.md5(req.body.password);
-    var is_admin = req.body.is_admin;
-    User.findOneAndUpdate({_id: id}, {password: password, is_admin: is_admin}, function (err, user) {
-        if (err)
-            return res.json({"success": false, "msg": "更新用户信息失败"});
-        return res.json({ "success": true });
-    });
-});
+//router.post('/update/user/:id', function (req, res) {
+//    var id = req.params['id'];
+//    var password = req.body.password;
+//    var is_admin = req.body.is_admin;
+//    var query = {is_admin: is_admin};
+//    if (_.isEmpty(password)) {
+//        query["password"] = password;
+//    }
+//    User.findOneAndUpdate({_id: id}, query, function (err, user) {
+//        if (err)
+//            return res.json({"success": false, "msg": "更新用户信息失败"});
+//        return res.json({ "success": true });
+//    });
+//});
 
-router.post('/user/changepassword/:id', function (req, res) {
+router.post('/user/changepassword/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
     var id = req.params['id'];
     var old_password = req.body.oldPassword;
     var new_password = req.body.newPassword;
@@ -282,43 +271,43 @@ router.get('/permission', function (req, res) {
     });
 });
 
-router.post('/permission', function (req, res) {
-    var realtime = req.body.realtime;
-    var operation = req.body.operation;
-    var notice = req.body.notice;
-    var permission = {
-        "realtime": realtime,
-        "operation": operation,
-        "notice": notice
-    };
-    var permissionList = ['realtime', 'operation', 'notice'];
-    for (var i = 0; i < permissionList.length; i++) {
-        var query = {'message_type': permissionList[i]};
-        var updateParams = {'is_forbid': permission[permissionList[i]]};
-        Permission.findOneAndUpdate(query, updateParams, {'upsert': true}, function (err, permission) {
-            if (err) console.log("更新权限失败");
-        });
-    }
-    return res.json({ "success": true });
+//router.post('/permission', function (req, res) {
+//    var realtime = req.body.realtime;
+//    var operation = req.body.operation;
+//    var notice = req.body.notice;
+//    var permission = {
+//        "realtime": realtime,
+//        "operation": operation,
+//        "notice": notice
+//    };
+//    var permissionList = ['realtime', 'operation', 'notice'];
+//    for (var i = 0; i < permissionList.length; i++) {
+//        var query = {'message_type': permissionList[i]};
+//        var updateParams = {'is_forbid': permission[permissionList[i]]};
+//        Permission.findOneAndUpdate(query, updateParams, {'upsert': true}, function (err, permission) {
+//            if (err) console.log("更新权限失败");
+//        });
+//    }
+//    return res.json({ "success": true });
+//
+//});
 
-});
-
-function pushMsgToAPP(messageID, messageTitle, messageType) {
-    client.push().setPlatform(JPush.ALL)
-        .setAudience(JPush.ALL)
-        .setNotification('银评天下消息提醒', JPush.android('银评天下', messageTitle, 5, {"messageid": messageID, "messageType": messageType}))
-        .send(function (err, res) {
-            if (err) {
-                if (err instanceof JPush.APIConnectionError) {
-                    console.log(err.message);
-                } else if (err instanceof  JPush.APIRequestError) {
-                    console.log(err.message);
-                }
-            } else {
-                console.log('Sendno: ' + res.sendno);
-                console.log('Msg_id: ' + res.msg_id);
-            }
-        });
-}
+//function pushMsgToAPP(messageID, messageTitle, messageType) {
+//    client.push().setPlatform(JPush.ALL)
+//        .setAudience(JPush.ALL)
+//        .setNotification('银评天下消息提醒', JPush.android('银评天下', messageTitle, 5, {"messageid": messageID, "messageType": messageType}))
+//        .send(function (err, res) {
+//            if (err) {
+//                if (err instanceof JPush.APIConnectionError) {
+//                    console.log(err.message);
+//                } else if (err instanceof  JPush.APIRequestError) {
+//                    console.log(err.message);
+//                }
+//            } else {
+//                console.log('Sendno: ' + res.sendno);
+//                console.log('Msg_id: ' + res.msg_id);
+//            }
+//        });
+//}
 
 module.exports = router;

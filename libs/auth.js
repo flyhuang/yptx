@@ -6,6 +6,7 @@ var UserModel               = require('../models/user');
 var ClientModel             = require('../models/client');
 var AccessTokenModel        = require('../models/accessToken');
 var RefreshTokenModel       = require('../models/refreshToken');
+var Permission              = require('../models/permission');
 
 passport.use(new BasicStrategy(
     function(username, password, done) {
@@ -47,9 +48,24 @@ passport.use(new BearerStrategy(
             UserModel.findById(token.userId, function(err, user) {
                 if (err) { return done(err); }
                 if (!user) { return done(null, false, { message: 'Unknown user' }); }
-
                 var info = { scope: '*' };
-                done(null, user, info);
+                if (user.username == "anonymous" || user.disabled) {
+                    Permission.find({}, function (err, permissions) {
+                        if (err) return done(err);
+                        var forbid_dict = {"realtime": false, "operation": false, "notice": false};
+                        for (var i = 0; i < permissions.length; i++) {
+                            var permission = permissions[i];
+                            if (permission.message_type != undefined) {
+                                forbid_dict[permission.message_type] = permission.is_forbid;
+                            }
+                        }
+                        info['scope'] = forbid_dict;
+                        done(null, user, info);
+                    });
+                } else {
+                    done(null, user, info);
+                }
+
             });
         });
     }

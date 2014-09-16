@@ -96,16 +96,15 @@ _.extend(yptxHelper.prototype, {
 
     restrict: function (req, res, next) {
         console.log(req.session);
-        if (req.session.user) {
+        if (req.session.user && req.session.user.is_admin) {
             res.locals.session = req.session;
             return next();
         } else {
             req.session.error = 'Access denied!';
             if (req.xhr) {
-
                 return res.status('403').json({success:false, msg: "Access denied!"});
             }
-            return res.redirect('/login');
+            return res.redirect('/login?expired=true');
         }
     },
 
@@ -122,6 +121,22 @@ _.extend(yptxHelper.prototype, {
         }
 
         req.session.save();
+    },
+
+    checkPermission: function (req, res, next) {
+        var authInfo = req.authInfo;
+        var scope = authInfo.scope;
+        if (scope == "*") {
+            return next();
+        } else {
+            var messageType = req.params["type"];
+            if (messageType) {
+                if (scope[messageType]) {
+                    return res.status(403).send("没有权限!");
+                }
+            }
+            return next();
+        }
     }
 });
 

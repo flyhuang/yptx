@@ -1,5 +1,13 @@
 var currentDataTable;
 
+$(document).ajaxError(function (event, xhr, options, exc) {
+    console.log(event);
+    console.log(xhr);
+    console.log(options);
+    console.log(exc);
+    window.location = "/login?expired=true";
+});
+
 // Page Request...
 function getCreateUserPage(self) {
     remove();
@@ -10,9 +18,6 @@ function getCreateUserPage(self) {
         type: "get",
         success: function (res) {
             $("#page-wrapper").html(res);
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -27,9 +32,6 @@ function getMessagePage(type, self) {
         success: function (res) {
             $("#page-wrapper").html(res);
             initMsgDataTable(type);
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -42,9 +44,6 @@ function getCreateMessagePage(type) {
         success: function (res) {
             $("#page-wrapper").html(res);
             CKEDITOR.replace('msgContent');
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -59,9 +58,6 @@ function getUserListPage(self) {
         success: function (res) {
             $("#page-wrapper").html(res);
             initUserDataTable();
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -73,9 +69,6 @@ function getEditUserPage(id) {
         type: "get",
         success: function (res) {
             $("#page-wrapper").html(res);
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -88,9 +81,6 @@ function getEditMsgPage(id) {
         success: function (res) {
             $("#page-wrapper").html(res);
             CKEDITOR.replace('msgContent');
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -104,9 +94,6 @@ function getPermissionPage(self) {
         type: "get",
         success: function (res) {
             $("#page-wrapper").html(res);
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -118,7 +105,7 @@ function getPermissionPage(self) {
 
 function deleteMsg(messageid) {
     $.ajax({
-        url: "/api/messages/delete/" + messageid,
+        url: "/admin/api/messages/delete/" + messageid,
         datatype: "json",
         type: "delete",
         success: function (res) {
@@ -128,9 +115,6 @@ function deleteMsg(messageid) {
             } else {
                 alertify.error("删除失败!");
             }
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -138,7 +122,7 @@ function deleteMsg(messageid) {
 
 function createUser() {
     $.ajax({
-        url: "/api/createuser",
+        url: "/admin/api/createuser",
         datatype: "json",
         type: "post",
         data: $("#createUserForm").serialize(),
@@ -148,9 +132,6 @@ function createUser() {
             } else {
                 alertify.error(res.msg);
             }
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -159,7 +140,7 @@ function createUser() {
 function createMessage(type) {
     var content = CKEDITOR.instances.msgContent.getData();
     $.ajax({
-        url: "/api/messages/create/" + type,
+        url: "/admin/api/messages/create/" + type,
         datatype: "json",
         type: "put",
         data: {"title": $("input[name='title']").val(), "content": content},
@@ -169,9 +150,6 @@ function createMessage(type) {
             } else {
                 alertify.error(res.msg);
             }
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
@@ -180,7 +158,7 @@ function updateMessage(id) {
     var content = CKEDITOR.instances.msgContent.getData();
     console.log(content);
     $.ajax({
-        url: "/api/messages/update/" + id,
+        url: "/admin/api/messages/update/" + id,
         datatype: "json",
         type: "post",
         data: {"title": $("input[name='title']").val(), "content": content},
@@ -190,16 +168,29 @@ function updateMessage(id) {
             } else {
                 alertify.error(res.msg);
             }
-        },
-        error: function (res) {
-            window.location = "/login";
+        }
+    })
+}
+
+function updateUserStatus(id, status) {
+    $.ajax({
+        url: "/admin/api/update/user/"+ status +"/"+ id +"/",
+        datatype: "json",
+        type: "post",
+        success: function (res) {
+            if (res.success) {
+                alertify.success("用户状态更新成功!");
+                currentDataTable.api().ajax.reload();
+            } else {
+                alertify.error(res.msg);
+            }
         }
     })
 }
 
 function deleteUser(id) {
     $.ajax({
-        url: "/api/delete/user/" + id,
+        url: "/admin/api/delete/user/" + id,
         datatype: "json",
         type: "delete",
         success: function (res) {
@@ -209,16 +200,13 @@ function deleteUser(id) {
             } else {
                 alertify.error("删除失败!");
             }
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
 
 function updateUser(id) {
     $.ajax({
-        url: "/api/update/user/" + id,
+        url: "/admin/api/update/user/" + id,
         datatype: "json",
         type: "post",
         data: $("#createUserForm").serialize(),
@@ -228,16 +216,13 @@ function updateUser(id) {
             } else {
                 alertify.error(res.msg);
             }
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
 
 function updatePermission() {
     $.ajax({
-        url: "/api/permission",
+        url: "/admin/api/permission",
         datatype: "json",
         type: "post",
         data: $("#permission-form").serialize(),
@@ -247,22 +232,16 @@ function updatePermission() {
             } else {
                 alertify.error(res.msg);
             }
-        },
-        error: function (res) {
-            window.location = "/login";
         }
     })
 }
 
 function logout() {
     $.ajax({
-        url: "/api/logout",
+        url: "/admin/api/logout",
         datatype: "json",
         type: "get",
         success: function (res) {
-            window.location = "/login";
-        },
-        error: function (res) {
             window.location = "/login";
         }
     })
@@ -289,7 +268,7 @@ function initMsgDataTable(type) {
         "bAutoWidth": false,
         "bProcessing": true,
         "bRetrieve": true,
-        "ajax": "/api/messages/" + type + "?is_admin_request=true"
+        "ajax": "/admin/api/messages/" + type
     });
 }
 
@@ -310,7 +289,7 @@ function initUserDataTable() {
         "bAutoWidth": false,
         "bProcessing": true,
         "bRetrieve": true,
-        "ajax": "/api/user/list"
+        "ajax": "/admin/api/user/list"
     });
 }
 

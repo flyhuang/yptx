@@ -10,6 +10,12 @@ UserModel.remove({}, function(err) {
         if(err) return console.log(err);
         else console.log("New user - %s:%s",user.username,user.password);
     });
+
+    var anonymous = new UserModel({ username: "anonymous", password: "anonymous", is_admin: false});
+    anonymous.save(function(err, user) {
+        if(err) return console.log(err);
+        else console.log("New user - %s:%s",user.username,user.password);
+    });
 });
 
 ClientModel.remove({}, function(err) {
@@ -28,4 +34,4 @@ RefreshTokenModel.remove({}, function (err) {
 
 setTimeout(function() {
     mongoose.disconnect();
-}, 3000);
+}, 30000);
