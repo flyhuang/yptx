@@ -28,7 +28,7 @@ router.get('/messages/:type', ytHelper.restrict, function (req, res) {
             var message = messages[i];
             var messageResult = [];
             messageResult.push(message.title);
-            messageResult.push(new Date(message.update_at));
+            messageResult.push(message.update_at);
             messageResult.push("<a onclick='getEditMsgPage(\"" + message.id + "\")'>修改</a>");
             messageResult.push("<a onclick='deleteMsg(\"" + message.id + "\")'>删除</a>");
             messageList.push(messageResult);
@@ -195,7 +195,7 @@ router.get('/user/list', ytHelper.restrict, function (req, res) {
             }
             var userResult = [];
             userResult.push(user.username);
-            userResult.push(new Date(user.update_at));
+            userResult.push(user.update_at);
             userResult.push("<a onclick='getEditUserPage(\"" + user.id + "\")'>修改</a>");
             userResult.push("<a onclick='deleteUser(\"" + user.id + "\")'>删除</a>");
             var status = "激活";

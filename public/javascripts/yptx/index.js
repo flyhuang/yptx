@@ -174,7 +174,7 @@ function updateMessage(id) {
 
 function updateUserStatus(id, status) {
     $.ajax({
-        url: "/admin/api/update/user/"+ status +"/"+ id +"/",
+        url: "/admin/api/update/user/" + status + "/" + id + "/",
         datatype: "json",
         type: "post",
         success: function (res) {
@@ -265,6 +265,14 @@ function initMsgDataTable(type) {
             },
             "sProcessing": "<div width='100%' align='center'><img width='23px' height='28px' src='/images/loading.gif'></div>"
         },
+        "columnDefs": [
+            {
+                "targets": [1], // 目标列位置，下标从0开始
+                "render": function (data, type, full) { // 返回自定义内容
+                    return (new Date(data)).format("yyyy-MM-dd hh:mm:ss");
+                }
+            }
+        ],
         "bAutoWidth": false,
         "bProcessing": true,
         "bRetrieve": true,
@@ -286,6 +294,15 @@ function initUserDataTable() {
             },
             "sProcessing": "<div width='100%' align='center'><img width='23px' height='28px' src='/images/loading.gif'></div>"
         },
+        "columnDefs": [
+            {
+                "targets": [1], // 目标列位置，下标从0开始
+                "data": "创建时间", // 数据列名
+                "render": function (data, type, full) { // 返回自定义内容
+                    return (new Date(data)).format("yyyy-MM-dd hh:mm:ss");
+                }
+            }
+        ],
         "bAutoWidth": false,
         "bProcessing": true,
         "bRetrieve": true,
@@ -296,3 +313,31 @@ function initUserDataTable() {
 function remove() {
     $("a[class='active']").removeClass('active');
 }
+
+Date.prototype.format = function (format) {
+    var o = {
+        "M+": this.getMonth() + 1,
+        // month
+        "d+": this.getDate(),
+        // day
+        "h+": this.getHours(),
+        // hour
+        "m+": this.getMinutes(),
+        // minute
+        "s+": this.getSeconds(),
+        // second
+        "q+": Math.floor((this.getMonth() + 3) / 3),
+        // quarter
+        "S": this.getMilliseconds()
+        // millisecond
+    };
+    if (/(y+)/.test(format) || /(Y+)/.test(format)) {
+        format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    for (var k in o) {
+        if (new RegExp("(" + k + ")").test(format)) {
+            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        }
+    }
+    return format;
+};
