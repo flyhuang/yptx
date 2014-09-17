@@ -24,7 +24,7 @@ router.get('/messages/:type', [passport.authenticate('bearer', { session: false 
     var page = req.query.page ? req.query.page : 1;
     var count = req.query.count ? req.query.count : 10;
     var is_lasted = req.query.is_lasted ? req.query.is_lasted : false;
-    var currentTime = req.query.currentDate ? req.query.currentDate : new Date();
+    var currentTime = req.query.currentDate ? req.query.currentDate : new Date().getTime();
     console.log(currentTime);
     var query = {};
     if (is_lasted) {
@@ -185,34 +185,34 @@ router.get('/logout', passport.authenticate('bearer', { session: false }), funct
 });
 
 
-router.get('/user/list', passport.authenticate('bearer', { session: false }), function (req, res) {
-    User.find({}).sort('-update_at').exec(function (err, userList) {
-        if (err)
-            res.json({"success": false, "message": "查询用户失败"});
-        var resList = [];
-        for (var i = 0; i < userList.length; i++) {
-            var user = userList[i];
-            var userResult = [];
-            userResult.push(user.username);
-            userResult.push(user.update_at);
-            userResult.push("<a onclick='getEditUserPage(\"" + user.id + "\")'>修改</a>");
-            userResult.push("<a onclick='deleteUser(\"" + user.id + "\")'>删除</a>");
-            if (user.status == 'online') {
-                userResult.push("在线");
-            } else if (user.status == 'offline') {
-                userResult.push("离线");
-            } else {
-                userResult.push("未知");
-            }
-            userResult.push(user.is_admin);
-            resList.push(userResult);
-        }
-        return res.json({
-            "success": true,
-            "data": resList
-        });
-    });
-});
+//router.get('/user/list', passport.authenticate('bearer', { session: false }), function (req, res) {
+//    User.find({}).sort('-update_at').exec(function (err, userList) {
+//        if (err)
+//            res.json({"success": false, "message": "查询用户失败"});
+//        var resList = [];
+//        for (var i = 0; i < userList.length; i++) {
+//            var user = userList[i];
+//            var userResult = [];
+//            userResult.push(user.username);
+//            userResult.push(user.update_at);
+//            userResult.push("<a onclick='getEditUserPage(\"" + user.id + "\")'>修改</a>");
+//            userResult.push("<a onclick='deleteUser(\"" + user.id + "\")'>删除</a>");
+//            if (user.status == 'online') {
+//                userResult.push("在线");
+//            } else if (user.status == 'offline') {
+//                userResult.push("离线");
+//            } else {
+//                userResult.push("未知");
+//            }
+//            userResult.push(user.is_admin);
+//            resList.push(userResult);
+//        }
+//        return res.json({
+//            "success": true,
+//            "data": resList
+//        });
+//    });
+//});
 
 //router.delete('/delete/user/:id', function (req, res) {
 //    User.where().findOneAndRemove({ _id: req.params["id"]}, function (error, callback) {

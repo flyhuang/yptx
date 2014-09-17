@@ -7,7 +7,7 @@ var MessageSchema = new Schema({
     type: String,
     content: String,
     title: String,
-    update_at: { type: Date, default: Date.now }
+    update_at: { type: Number, default: new Date().getTime() }
 });
 
 
