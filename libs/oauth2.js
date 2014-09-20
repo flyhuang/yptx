@@ -35,13 +35,16 @@ var generateTokens = function (modelData, done) {
     modelData.token = refreshTokenValue;
     refreshToken = new RefreshTokenModel(modelData);
 
-    refreshToken.save(errorHandler);
-    token.save(function (err) {
-        if (err) {
-            return done(err);
-        }
-        done(null, tokenValue, refreshTokenValue, { 'expires_in': 3600 });
+    refreshToken.save(function (err) {
+        if (err) return done(err);
+        token.save(function (err) {
+            if (err) {
+                return done(err);
+            }
+            done(null, tokenValue, refreshTokenValue, { 'expires_in': 3600 });
+        });
     });
+
 };
 
 // Exchange username & password for access token.
