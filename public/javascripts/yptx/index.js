@@ -299,7 +299,6 @@ function initUserDataTable() {
         "columnDefs": [
             {
                 "targets": [1], // 目标列位置，下标从0开始
-                "data": "创建时间", // 数据列名
                 "render": function (data, type, full) { // 返回自定义内容
                     return (new Date(data)).format("yyyy-MM-dd hh:mm:ss");
                 }

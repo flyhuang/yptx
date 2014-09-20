@@ -59,6 +59,7 @@ router.put('/messages/create/:type', ytHelper.restrict, function (req, res, next
     message.title = title;
     message.content = content;
     message.type = req.params['type'];
+    message.update_at = Date.now();
     message.save(function (err) {
         if (err)
             res.json({"success": false, "message": "创建消息失败"});
@@ -150,6 +151,7 @@ router.post('/createuser', ytHelper.restrict, function (req, res) {
     user.username = req.body.username;  // set the bears name (comes from the request)
     user.password = req.body.password;
     user.is_admin = req.body.is_admin;
+    user.update_at = Date.now();
 
     if (_.isEmpty(user.username)) {
         return res.json({"success":false, "msg":"用户名不能为空"});

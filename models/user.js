@@ -15,7 +15,7 @@ var UserSchema = new Schema({
         required: true
     },
     avatar: String,
-    update_at: { type: Date, default: Date.now},
+    update_at: Number,
     is_admin: Boolean,
     permission_list: Array,
     status: String,
