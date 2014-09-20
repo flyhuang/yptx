@@ -37,7 +37,10 @@ passport.use(new BearerStrategy(
         AccessTokenModel.findOne({ token: accessToken }, function(err, token) {
             if (err) { return done(err); }
             if (!token) { return done(null, false); }
-
+            console.log("#################### Access Token: ####################");
+            console.log(accessToken);
+            console.log("#################### Current Token ####################");
+            console.log(token.created);
             if( Math.round((Date.now()-token.created)/1000) > 3600 ) {
                 AccessTokenModel.remove({ token: accessToken }, function (err) {
                     if (err) return done(err);
