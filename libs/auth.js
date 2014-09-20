@@ -51,7 +51,8 @@ passport.use(new BearerStrategy(
             UserModel.findById(token.userId, function(err, user) {
                 if (err) { return done(err); }
                 if (!user) { return done(null, false, { message: 'Unknown user' }); }
-                var info = { scope: '*' };
+                var info = { scope: '*', userId: user.id };
+
                 if (user.username == "anonymous" || user.disabled) {
                     Permission.find({}, function (err, permissions) {
                         if (err) return done(err);

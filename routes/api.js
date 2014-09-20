@@ -236,8 +236,9 @@ router.get('/logout', passport.authenticate('bearer', { session: false }), funct
 //    });
 //});
 
-router.post('/user/changepassword/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
-    var id = req.params['id'];
+router.post('/user/changepassword/', passport.authenticate('bearer', { session: false }), function (req, res) {
+    var authInfo = req.authInfo;
+    var id = authInfo['userId'];
     var old_password = req.body.oldPassword;
     var new_password = req.body.newPassword;
     if (_.isEmpty(new_password)) {
