@@ -273,6 +273,8 @@ function initMsgDataTable(type) {
                 }
             }
         ],
+        "bSort":true,
+        "aaSorting":[[1, "desc"]],
         "bAutoWidth": false,
         "bProcessing": true,
         "bRetrieve": true,
@@ -303,6 +305,8 @@ function initUserDataTable() {
                 }
             }
         ],
+        "bSort":true,
+        "aaSorting":[[1, "desc"]],
         "bAutoWidth": false,
         "bProcessing": true,
         "bRetrieve": true,
