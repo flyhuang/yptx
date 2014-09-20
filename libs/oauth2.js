@@ -23,28 +23,17 @@ var generateTokens = function (modelData, done) {
         token,
         tokenValue;
 
-    RefreshTokenModel.remove(modelData, errorHandler);
-    AccessTokenModel.remove(modelData, errorHandler);
-
     tokenValue = crypto.randomBytes(32).toString('base64');
     refreshTokenValue = crypto.randomBytes(32).toString('base64');
 
-    modelData.token = tokenValue;
-    token = new AccessTokenModel(modelData);
-
-    modelData.token = refreshTokenValue;
-    refreshToken = new RefreshTokenModel(modelData);
-
-    refreshToken.save(function (err) {
+    RefreshTokenModel.findOneAndUpdate(modelData, {token: refreshTokenValue}, {'upsert': true}, function(err, refresh) {
         if (err) return done(err);
-        token.save(function (err) {
-            if (err) {
-                return done(err);
-            }
+        AccessTokenModel.findOneAndUpdate(modelData, {token: tokenValue}, {'upsert': true}, function (err, access) {
+            if (err) return done(err);
             done(null, tokenValue, refreshTokenValue, { 'expires_in': 3600 });
-        });
-    });
+        })
 
+    });
 };
 
 // Exchange username & password for access token.
