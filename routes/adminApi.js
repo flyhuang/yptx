@@ -115,7 +115,7 @@ router.post('/login', function (req, res) {
                 msg: "该用户不存在"
             })
         }
-        if (userDetails.checkPassword(pass)) {
+        if (!userDetails.checkPassword(pass)) {
             return res.json({
                 success: false,
                 msg: "请输入正确的用户名或者密码"
