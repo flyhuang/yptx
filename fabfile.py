@@ -12,6 +12,7 @@ from fabric.colors import green, red
 # Internal variables
 APP_HOME = "~/apps"
 DEPLOY_USER = "deploy"
+DEPLOY_PASSWORD = "deploy"
 DEPLOY_HOST = "121.40.182.189"
 TRAVIS_SSH_KEY = "~/.ssh/id_rsa"
 
@@ -19,6 +20,7 @@ def setup():
     """Prepare to login to production server."""
     env.host_string = DEPLOY_HOST
     env.user = DEPLOY_USER
+    env.password = DEPLOY_PASSWORD
     env.key_filename = TRAVIS_SSH_KEY
     env.port = 22
     print(red("Login production server succeed!!!"))
