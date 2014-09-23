@@ -46,31 +46,36 @@ passport.use(new BearerStrategy(
                     if (err) return done(err);
                 });
                 return done(null, false, { message: 'Token expired' });
+            } else {
+                AccessTokenModel.findOneAndUpdate({ token: accessToken }, {created: Date.now}, function (err) {
+                    if (err) return done(err);
+                    UserModel.findById(token.userId, function(err, user) {
+                        if (err) { return done(err); }
+                        if (!user) { return done(null, false, { message: 'Unknown user' }); }
+                        var info = { scope: '*', userId: user.id };
+
+                        if (user.username == "anonymous" || user.disabled) {
+                            Permission.find({}, function (err, permissions) {
+                                if (err) return done(err);
+                                var forbid_dict = {"realtime": false, "operation": false, "notice": false};
+                                for (var i = 0; i < permissions.length; i++) {
+                                    var permission = permissions[i];
+                                    if (permission.message_type != undefined) {
+                                        forbid_dict[permission.message_type] = permission.is_forbid;
+                                    }
+                                }
+                                info['scope'] = forbid_dict;
+                                done(null, user, info);
+                            });
+                        } else {
+                            done(null, user, info);
+                        }
+
+                    });
+                })
             }
 
-            UserModel.findById(token.userId, function(err, user) {
-                if (err) { return done(err); }
-                if (!user) { return done(null, false, { message: 'Unknown user' }); }
-                var info = { scope: '*', userId: user.id };
 
-                if (user.username == "anonymous" || user.disabled) {
-                    Permission.find({}, function (err, permissions) {
-                        if (err) return done(err);
-                        var forbid_dict = {"realtime": false, "operation": false, "notice": false};
-                        for (var i = 0; i < permissions.length; i++) {
-                            var permission = permissions[i];
-                            if (permission.message_type != undefined) {
-                                forbid_dict[permission.message_type] = permission.is_forbid;
-                            }
-                        }
-                        info['scope'] = forbid_dict;
-                        done(null, user, info);
-                    });
-                } else {
-                    done(null, user, info);
-                }
-
-            });
         });
     }
 ));

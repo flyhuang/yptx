@@ -16,8 +16,7 @@ var UserSchema = new Schema({
     },
     avatar: String,
     update_at: Number,
-    is_admin: Boolean,
-    permission_list: Array,
+    permissionType: String,
     status: String,
     disabled: Boolean
 });

@@ -23,7 +23,17 @@
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="is_admin"> 管理员
+                            <input type="radio" name="permission_type" value="admin"> 管理员
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="radio" name="permission_type" value="message_admin"> 消息管理员
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="radio" name="permission_type" checked value="normal_user"> 普通用户
                         </label>
                     </div>
                     <button type="button" class="btn btn-primary" onclick="createUser()">创建用户</button>

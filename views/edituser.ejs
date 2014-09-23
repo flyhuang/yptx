@@ -21,15 +21,36 @@
                         <label for="password">新密码</label>
                         <input type="password" name="password" class="form-control" id="password" placeholder="新密码">
                     </div>
+
+                    <% if (locals.session.user.permissionType == 'admin') {%>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="is_admin"
-                                   <% if (is_admin) { %>
+                            <input type="radio" name="permission_type" value="admin"
+                                    <% if (permission_type == 'admin') { %>
                                     checked
-                                   <% } %>
+                                    <% } %>
                                     > 管理员
                         </label>
                     </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="radio" name="permission_type" value="message_admin"
+                                    <% if (permission_type == 'message_admin') { %>
+                                   checked
+                                    <% } %>
+                                    > 消息管理员
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="radio" name="permission_type" value="normal_user"
+                                    <% if (permission_type == 'normal_user') { %>
+                                   checked
+                                    <% } %>
+                                    > 普通用户
+                        </label>
+                    </div>
+                    <% } %>
                     <button type="button" class="btn btn-primary" onclick="updateUser('<%= id %>')">更新用户信息</button>
                 </form>
             </div>

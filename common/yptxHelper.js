@@ -31,7 +31,7 @@ _.extend(yptxHelper.prototype, {
             //   // or in this case the entire user object
             //   req.session.user = user;
             // });
-            req.session.user = user[0];
+            req.session.user = user;
             req.session.save();
         }
         //cookie valid in 30 days.
@@ -94,11 +94,54 @@ _.extend(yptxHelper.prototype, {
         return new_pass;
     },
 
-    restrict: function (req, res, next) {
+    adminRestrict: function (req, res, next) {
         console.log(req.session);
-        if (req.session.user && req.session.user.is_admin) {
+        if (req.session.user) {
+            if (req.session.user.permissionType != 'admin') {
+                return res.json({"success": false, msg: "没有权限操作, 请联系管理员!"});
+            }
             res.locals.session = req.session;
             return next();
+        } else {
+            req.session.error = 'Access denied!';
+            if (req.xhr) {
+                return res.status('403').json({success:false, msg: "Access denied!"});
+            }
+            return res.redirect('/login?expired=true');
+        }
+    },
+
+    messageAdminRestrict: function (req, res, next) {
+        console.log(req.session);
+        if (req.session.user && (req.session.user.permissionType == 'admin' || req.session.user.permissionType == 'message_admin')) {
+            res.locals.session = req.session;
+            return next();
+        } else {
+            req.session.error = 'Access denied!';
+            if (req.xhr) {
+                return res.status('403').json({success:false, msg: "Access denied!"});
+            }
+            return res.redirect('/login?expired=true');
+        }
+    },
+
+    userRestrict: function (req, res, next) {
+        if (req.session.user ) {
+            if (req.session.user.permissionType == 'admin') {
+                res.locals.session = req.session;
+                return next();
+            } else if (req.session.user.permissionType == 'message_admin') {
+                if (req.session.user._id != req.params["id"]) {
+                    return res.json({"success": false, "msg": "没有权限修改!"});
+                }
+                return next();
+            } else {
+                req.session.error = 'Access denied!';
+                if (req.xhr) {
+                    return res.status('403').json({success:false, msg: "Access denied!"});
+                }
+                return res.redirect('/login?expired=true');
+            }
         } else {
             req.session.error = 'Access denied!';
             if (req.xhr) {

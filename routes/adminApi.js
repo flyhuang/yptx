@@ -20,7 +20,7 @@ router.get('/', passport.authenticate('bearer'), function (req, res) {
 });
 
 // Get messages
-router.get('/messages/:type', ytHelper.restrict, function (req, res) {
+router.get('/messages/:type', ytHelper.messageAdminRestrict, function (req, res) {
     Message.find({ "type": req.params['type']}, function (error, messages) {
         if (error) return res.json({"success": false});
         var messageList = [];
@@ -40,7 +40,7 @@ router.get('/messages/:type', ytHelper.restrict, function (req, res) {
     })
 });
 
-router.get('/message/:id', ytHelper.restrict, function (req, res, next) {
+router.get('/message/:id', ytHelper.messageAdminRestrict, function (req, res, next) {
     var id = req.params["id"];
     Message.findOne({_id: id}, 'type content title update_at', function (err, message) {
         if (err) return res.json({"success": false});
@@ -52,7 +52,7 @@ router.get('/message/:id', ytHelper.restrict, function (req, res, next) {
 });
 
 // Create messages
-router.put('/messages/create/:type', ytHelper.restrict, function (req, res, next) {
+router.put('/messages/create/:type', ytHelper.messageAdminRestrict, function (req, res, next) {
     var title = req.body.title;
     var content = req.body.content;
     var message = new Message();
@@ -63,13 +63,13 @@ router.put('/messages/create/:type', ytHelper.restrict, function (req, res, next
     message.save(function (err) {
         if (err)
             res.json({"success": false, "message": "创建消息失败"});
-        pushMsgToAPP(message.id, message.title, message.type);
+//        pushMsgToAPP(message.id, message.title, message.type);
         return res.json({ "success": true });
     })
 });
 
 // Update messages
-router.post('/messages/update/:id', ytHelper.restrict, function (req, res, next) {
+router.post('/messages/update/:id', ytHelper.messageAdminRestrict, function (req, res, next) {
     var id = req.params['id'];
     var title = req.body.title;
     var content = req.body.content;
@@ -82,7 +82,7 @@ router.post('/messages/update/:id', ytHelper.restrict, function (req, res, next)
 
 
 // Delete messages
-router.delete('/messages/delete/:messageid', ytHelper.restrict, function (req, res, next) {
+router.delete('/messages/delete/:messageid', ytHelper.messageAdminRestrict, function (req, res, next) {
     Message.where().findOneAndRemove({ _id: req.params["messageid"]}, function (error, callback) {
         if (error) return res.json({"success": false});
         res.json({"success": true, "msg": "删除成功"});
@@ -93,10 +93,9 @@ router.delete('/messages/delete/:messageid', ytHelper.restrict, function (req, r
 
 // Login API
 router.post('/login', function (req, res) {
-    console.log("Rquest to login");
+    console.log("Request to login");
     var name = req.body.username;
     var pass = req.body.password;
-    var isAdmin = req.body.is_admin;
     if (_.isEmpty(name) || _.isEmpty(pass)) {
         res.json({
             success: false,
@@ -106,8 +105,7 @@ router.post('/login', function (req, res) {
         });
     }
 
-    var user = new User({"username": name, "password": pass});
-    user.findUserByName(function (err, userDetails) {
+    User.findOne({username: name}, function (err, userDetails) {
         if (err)
             return res.send(err);
         console.log(userDetails);
@@ -117,14 +115,15 @@ router.post('/login', function (req, res) {
                 msg: "该用户不存在"
             })
         }
-        if (!user.checkPassword(user.password)) {
+        if (userDetails.checkPassword(pass)) {
             return res.json({
                 success: false,
                 msg: "请输入正确的用户名或者密码"
             })
         }
 
-        if (!userDetails[0].is_admin) {
+        var userPermission = userDetails.permissionType;
+        if (userPermission != "admin" && userPermission != "message_admin") {
             return res.json({
                 success: false,
                 msg: "没有权限登陆, 请联系管理员!"
@@ -132,7 +131,7 @@ router.post('/login', function (req, res) {
         }
 
         ytHelper.popSession(userDetails, res, req);
-        User.findOneAndUpdate({_id: userDetails[0].id}, {'status':'在线'}, function(err, result) {
+        User.findOneAndUpdate({_id: userDetails.id}, {'status':'在线'}, function(err, result) {
             if (err) return res.json({success:false, msg:'登陆失败'});
 
             return res.json({
@@ -145,12 +144,12 @@ router.post('/login', function (req, res) {
 
 
 //Create user api
-router.post('/createuser', ytHelper.restrict, function (req, res) {
+router.post('/createuser', ytHelper.adminRestrict, function (req, res) {
     //TODO Validation
     var user = new User(); 		// create a new instance of the Bear model
     user.username = req.body.username;  // set the bears name (comes from the request)
     user.password = req.body.password;
-    user.is_admin = req.body.is_admin;
+    user.permissionType = req.body.permission_type;
     user.update_at = Date.now();
 
     if (_.isEmpty(user.username)) {
@@ -176,7 +175,7 @@ router.post('/createuser', ytHelper.restrict, function (req, res) {
     });
 });
 
-router.get('/logout', ytHelper.restrict, function (req, res) {
+router.get('/logout', ytHelper.messageAdminRestrict, function (req, res) {
     ytHelper.clearCookieAndSession(res, req);
     res.send({
         success: true,
@@ -185,7 +184,7 @@ router.get('/logout', ytHelper.restrict, function (req, res) {
 });
 
 
-router.get('/user/list', ytHelper.restrict, function (req, res) {
+router.get('/user/list', ytHelper.adminRestrict, function (req, res) {
     User.find({}).sort('-update_at').exec(function (err, userList) {
         if (err)
             res.json({"success": false, "message": "查询用户失败"});
@@ -208,13 +207,6 @@ router.get('/user/list', ytHelper.restrict, function (req, res) {
                 userResult.push("<a onclick='updateUserStatus(\"" + user.id + "\"), true')>禁止此用户</a>")
             }
             userResult.push(status);
-//            if (user.status == 'online') {
-//                userResult.push("在线");
-//            } else if (user.status == 'offline') {
-//                userResult.push("离线");
-//            } else {
-//                userResult.push("未知");
-//            }
             userResult.push(user.is_admin ? "是" : "否");
             resList.push(userResult);
         }
@@ -225,18 +217,23 @@ router.get('/user/list', ytHelper.restrict, function (req, res) {
     });
 });
 
-router.delete('/delete/user/:id', ytHelper.restrict, function (req, res) {
+router.delete('/delete/user/:id', ytHelper.adminRestrict, function (req, res) {
     User.where().findOneAndRemove({ _id: req.params["id"]}, function (error, callback) {
         if (error) return res.json({"success": false});
         res.json({"success": true, "msg": "删除成功"});
     });
 });
 
-router.post('/update/user/:id', ytHelper.restrict, function (req, res) {
+router.post('/update/user/:id', ytHelper.userRestrict, function (req, res) {
     var id = req.params['id'];
     var password = req.body.password;
-    var is_admin = req.body.is_admin;
-    var query = {is_admin: is_admin};
+    var query = {};
+
+    if (req.session.user.permissionType == 'admin') {
+        var permissionType = req.body.permission_type;
+        query = {permissionType: permissionType};
+    }
+
     if (_.isEmpty(password)) {
         query["password"] = password;
     }
@@ -247,7 +244,7 @@ router.post('/update/user/:id', ytHelper.restrict, function (req, res) {
     });
 });
 
-router.post('/update/user/:status/:id', ytHelper.restrict, function (req, res) {
+router.post('/update/user/:status/:id', ytHelper.adminRestrict, function (req, res) {
     var id = req.params['id'];
     var status = req.params['status'];
     User.findOneAndUpdate({_id: id}, {disabled: status}, function (err, user) {
@@ -258,7 +255,7 @@ router.post('/update/user/:status/:id', ytHelper.restrict, function (req, res) {
 });
 
 
-router.post('/user/changepassword/:id', ytHelper.restrict, function (req, res) {
+router.post('/user/changepassword/:id', ytHelper.messageAdminRestrict, function (req, res) {
     var id = req.params['id'];
     var old_password = req.body.oldPassword;
     var new_password = req.body.newPassword;
@@ -279,7 +276,7 @@ router.post('/user/changepassword/:id', ytHelper.restrict, function (req, res) {
     })
 });
 
-router.get('/permission', ytHelper.restrict, function (req, res) {
+router.get('/permission', ytHelper.adminRestrict, function (req, res) {
     Permission.find({}, function (err, permissions) {
         if (err) return res.json({"success": false});
         var forbid_dict = {"realtime": false, "operation": false, "notice": false};
@@ -293,7 +290,7 @@ router.get('/permission', ytHelper.restrict, function (req, res) {
     });
 });
 
-router.post('/permission', ytHelper.restrict, function (req, res) {
+router.post('/permission', ytHelper.adminRestrict, function (req, res) {
     var realtime = req.body.realtime;
     var operation = req.body.operation;
     var notice = req.body.notice;

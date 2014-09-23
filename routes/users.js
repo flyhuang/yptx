@@ -21,36 +21,30 @@ router.get('/login', function (req, res) {
     return res.render('login');
 });
 
-// Save token
-router.post('/store/token', ytHelper.restrict, function(req, res) {
-    ytHelper.addAccessTokenIntoSession(req, res);
-    return res.json({'success': true});
-});
-
 // Create User Page
-router.get('/user/create', ytHelper.restrict, function (req, res, next) {
+router.get('/user/create', ytHelper.adminRestrict, function (req, res, next) {
     res.render('createuser');
 });
 
 // Edit User Page
-router.get('/user/edit/:id', ytHelper.restrict, function (req, res, next) {
+router.get('/user/edit/:id', ytHelper.messageAdminRestrict, function (req, res, next) {
     var id = req.params["id"];
     User.findOne({_id: id}, function (err, user) {
         console.log(user);
         res.render('edituser', {
             "username": user.username,
-            "is_admin": user.is_admin,
+            "permission_type": user.permissionType,
             "id": id
         });
     });
 });
 
 // User List Page
-router.get('/user/list', ytHelper.restrict, function (req, res, next) {
+router.get('/user/list', ytHelper.adminRestrict, function (req, res, next) {
     res.render('userlist')
 });
 
-router.get('/user/permission', ytHelper.restrict, function (req, res, next) {
+router.get('/user/permission', ytHelper.adminRestrict, function (req, res, next) {
     Permission.find({}, function(err, permissions) {
         if (err) return res.json({"success" : false});
         var forbid_dict = {"realtime": false, "operation": false, "notice":false};
