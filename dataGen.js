@@ -5,6 +5,8 @@ var AccessTokenModel        = require('./models/accessToken');
 var RefreshTokenModel       = require('./models/refreshToken');
 var Message = require('./models/message');
 
+mongoose.connect('mongodb://localhost:27017/yptx');
+
 UserModel.remove({}, function(err) {
     var user = new UserModel({ username: "yptx", password: "yptx", permissionType: "admin"});
     user.save(function(err, user) {
@@ -46,4 +48,4 @@ RefreshTokenModel.remove({}, function (err) {
 
 setTimeout(function() {
     mongoose.disconnect();
-}, 300000);
+}, 10000);
