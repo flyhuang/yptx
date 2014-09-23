@@ -24,9 +24,10 @@ branches:
   - master
 env:
   global:
-    - secure: "HxLVXyo9bLOSNn582Orv5jDTSE/JGmg6oHnDu+boJqnWk5qiBdJt0/kpMHC0DyFG3JCTIZwqDcMIKNdce9Kdgjo9wPGPyXhC+6iuXG5LiVPO9qO/n+T62L8A0b7IAzv2XcMCb791arnf52P8/ErAjaJjmGRc1GC+GfkdyPg/Gdg="
-    - secure: "ol9Dqquc3ipaCbcdTJlD4k5Lb2BxVWnsJ9Zv7ylzgCnOP3ot41xLMy9VNd3HF/ApX4sUtEf/b3mGhpkyIuQ5P9Wgg/XOXw5QkOnsoMoWJ9cLXFRjKrgb9wbdyQ/luNjtAuWMvG1rdYZxFPnOE1qieYJPW5N6aIaSMnDXa4sAPwQ="
-    - secure: "Foj7dQiZi33KtLXcpYxMuvPmttt1zwFSCh4Ms/9U17ADWy2nWfhjuSW5J9xaeniyCTt0nBvZdswNMLn1HdG+Lf14ujAyVGzbhzKTiduW9Bc/Etqzj+ECsEeg5y8NnjiQMBW+9K9tadR5CSQesXUppeduHnjRU4idhXIZnv+DkIc="
-    - secure: "Ujl14Mwr24sR+kmiI1WPH979TwonHo1xwjcKyHdPuCVug2ann20/LPwujOMcmGWJkIP+Xv9cK58uttHc7xbyzqPQXxMvfV0Qubg5a0DVwBpJNNjyCmPhQ0KVMPa6+PUyeaVREBDe7iQFp+PsHi/o8+y0Dt/PzF+5JUH3U0WRC6g="
-    - secure: "Neycw19XNocpqsHglQD34t+tfhWoptCH8KePrSFj7L6nbacL9AK5kjY83CdubzsoTdbyeEeFI3BGQKNmvQxfKRp+st5uGLrYOtSaeMXvOPw3n2GgcOpqRmX8X23dHKJ9gky1dUxws3cVrhJUA99uJDNksGjBjVge7tOFhEoo0F4="
-    - secure: "JFXp+86g8GJo6BZODNFhou+OuwgXB2ZCl3LQGDnipUdAmrhV5y7eNM1bh9HFJ4TVRAy88o9LIV+9dT7LtOXYUa6iBzwkhwQjCzC62V6nSKqQ9dCZSm9c3SZMru1NIl6mIclfN7diawcQPbeLtdnfW5xzKATRVeMBQ35Lcm3aEZE="
+    - secure: "HkMDKddbCdSKgGo8WrJXlxZjQd320O29g0hkUE28555XIC/qQ7Qvd91sMCkmjusEsPd2rqYRWt3qyTD5BVyEatc5L1lEPezGYhRBCUqEBoXQ56LstaC6XA+eX7nrYfNa40cKcL8AT/k9UWD/oenxJxxFDDo01gHL9U3V84n7+X4="
+    - secure: "IPH8SIzt5LC0xfPauMtGyvnOex9jdb2dNdNbcDe+INW0U+8R4zgmVGwQao8UxucLmX9LYKk2KaUp9OsA8bkvXW/lrPnI6BFJ27hCz0gortHgzT9UoCWt0t8WfW11GzlLYuS+6374LlSPZBDfIK2IBsCAldtfYlGiDsbx3z5nNhw="
+    - secure: "N+YSmh7fsOvp4qNUSZjOueIodpbPJoM9XPHa+D0gLRkayJhzTkJl8KTijIPga6uM6XhTqM1JNsqT8GkfW9Ta8TB9P6J6yfjCW+X7a27/Cfrcdou/aoow5S3cJgc3zUHFIvtu4kLaJvu/lzt/RA5adDW2AJaOG4UjZwvtcdjCvm8="
+    - secure: "TKPwMQcI7YfhugK+bwdfB8AvqPb56tjy+lSgISn54b4dgKco6hv1TQxhAPmvar6mhN6JVOzLLMcvFQZ3X2wDwGcQN4E2r0JH7+LqNYFO5FAq7DuE+1ykfTU2QpE58CAqTmTSjRWJHt1bjquH4s7avjVqkl7mCDfVY3bVHtqNAok="
+    - secure: "WnO0W9QcUUs7myiDyrIbfld6K5Kzlu8G6tijgR9axaqUnMLr5+WwhWCX9SLGTH1QBO9fNYGQFWe21YTGM1LsP7x2d9zPTdfXxOf/sc26gCBs6l7PYc41ARY2vW6i4Z3YsOxb9UGwxdOWCjTL5muM8SmKWEmDOeYRJUB+b2iMErI="
+    - secure: "diH2oe6lB6mdKRK053mdg8Vf2moscqKRDvphIcxIfmE01NQXHApbwi4TeK/ds7BHTDs4W1yWQfC+iDM6uBjXOdSUtczb4Xx8ShmGyS6hUhiCydj3Cdlka9HAcv2sv8kayTmhp4U8adv5s6bA0e3moWwiFPWKXwLONH5DLrtZjHY="
+
