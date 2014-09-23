@@ -63,7 +63,7 @@ router.put('/messages/create/:type', ytHelper.messageAdminRestrict, function (re
     message.save(function (err) {
         if (err)
             res.json({"success": false, "message": "创建消息失败"});
-//        pushMsgToAPP(message.id, message.title, message.type);
+        pushMsgToAPP(message.id, message.title, message.type);
         return res.json({ "success": true });
     })
 });
