@@ -207,7 +207,16 @@ router.get('/user/list', ytHelper.adminRestrict, function (req, res) {
                 userResult.push("<a onclick='updateUserStatus(\"" + user.id + "\"), true')>禁止此用户</a>")
             }
             userResult.push(status);
-            userResult.push(user.is_admin ? "是" : "否");
+            var permissionType = user.permissionType;
+            var permissionName = "普通用户";
+            if (user.permissionType == 'admin') {
+                permissionName = "管理员";
+            } else if (user.permissionType == 'message_admin') {
+                permissionName = "消息管理員";
+            } else {
+                permissionName = "普通用戶";
+            }
+            userResult.push(permissionName);
             resList.push(userResult);
         }
         return res.json({
