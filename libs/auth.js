@@ -47,7 +47,7 @@ passport.use(new BearerStrategy(
                 });
                 return done(null, false, { message: 'Token expired' });
             } else {
-                AccessTokenModel.findOneAndUpdate({ token: accessToken }, {created: Date.now}, function (err) {
+                AccessTokenModel.findOneAndUpdate({ token: accessToken }, {created: Date.now()}, function (err) {
                     if (err) return done(err);
                     UserModel.findById(token.userId, function(err, user) {
                         if (err) { return done(err); }
