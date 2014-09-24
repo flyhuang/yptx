@@ -1,5 +1,15 @@
 var currentDataTable;
 
+$(document).ready(function() {
+    window.addEventListener('load', function () {
+        CKEDITOR.extendCKEDITOR({
+            actionUrl: $('#createMegForm').attr('data-image-action'),
+            responseId: 'ckeditor_src',
+            responseAttr: 'data-src'
+        });
+    }, false);
+});
+
 $(document).ajaxError(function (event, xhr, options, exc) {
     console.log(event);
     console.log(xhr);

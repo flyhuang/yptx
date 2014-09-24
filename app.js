@@ -89,7 +89,7 @@ mongoose.connect('mongodb://localhost:27017/yptx'); // connect to our database
 
 module.exports = app;
 
-var port = process.env.PORT || 8080; // set our port
+var port = process.env.PORT || 5000; // set our port
 //
 // =============================================================================
 app.listen(port);

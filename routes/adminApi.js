@@ -11,7 +11,9 @@ var express = require('express'),
     JPush = require("jpush-sdk"),
     passport = require('passport'),
     oauth2 = require('../libs/oauth2'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    formidable = require("formidable"),
+    fs = require('fs');
 
 var client = JPush.buildClient('a13e1db90e37e020e545d540', 'da08e43c8d6aff997ffe79bd');
 
@@ -309,6 +311,26 @@ router.post('/permission', ytHelper.adminRestrict, function (req, res) {
     }
     return res.json({ "success": true });
 
+});
+
+router.post('/image/upload', ytHelper.messageAdminRestrict, function (req, res) {
+    var form = new formidable.IncomingForm();
+    form.keepExtensions = true; //keep .jpg/.png
+
+    var dirPath = __dirname + '/../public/images/';
+
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath);
+    }
+
+    form.uploadDir = dirPath;
+
+    form.parse(req, function (err, fields, files) {
+        var filePath = files.upload.path.replace(/\\/g, '/');
+        var data_src = req.protocol + '://' + req.host + ":5000" + '/images/' + filePath.substring(filePath.lastIndexOf('/') + 1);
+        var id = 'ckeditor_src';
+        res.end('<div id="' + id + '" data-src=' + data_src + '></div>');
+    });
 });
 
 function pushMsgToAPP(messageID, messageTitle, messageType) {
