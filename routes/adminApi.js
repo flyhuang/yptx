@@ -123,6 +123,13 @@ router.post('/login', function (req, res) {
             })
         }
 
+        if (userDetails.disabled) {
+            return res.json({
+                success: false,
+                msg: "您的用戶已被禁止, 請聯繫管理員."
+            })
+        }
+
         var userPermission = userDetails.permissionType;
         if (userPermission != "admin" && userPermission != "message_admin") {
             return res.json({
@@ -268,27 +275,6 @@ router.post('/update/user/:status/:id', ytHelper.adminRestrict, function (req, r
     });
 });
 
-
-router.post('/user/changepassword/:id', ytHelper.messageAdminRestrict, function (req, res) {
-    var id = req.params['id'];
-    var old_password = req.body.oldPassword;
-    var new_password = req.body.newPassword;
-    if (_.isEmpty(new_password)) {
-        return res.json({"success": false, "msg": "新密码不能为空"});
-    }
-    User.find({_id: id}, function (err, user) {
-        if (err) return res.json({"success": false, "msg": "更新用户信息失败"});
-        if (!user.checkPassword(old_password)) {
-            return res.json({"success": false, "msg": "密码不正确"});
-        }
-        user.password = new_password;
-        user.save(function (err) {
-            if (err)
-                return res.json({"success": false, "message": "修改密码失败"});
-            return res.json({ "success": true, "msg": "密码更新成功" });
-        });
-    })
-});
 
 router.get('/permission', ytHelper.adminRestrict, function (req, res) {
     Permission.find({}, function (err, permissions) {
