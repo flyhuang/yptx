@@ -152,6 +152,7 @@ router.post('/createuser', ytHelper.adminRestrict, function (req, res) {
     user.password = req.body.password;
     user.permissionType = req.body.permission_type;
     user.update_at = Date.now();
+    user.disabled = req.body.is_disabled == 'on';
 
     if (_.isEmpty(user.username)) {
         return res.json({"success":false, "msg":"用户名不能为空"});
@@ -241,7 +242,8 @@ router.post('/update/user/:id', ytHelper.userRestrict, function (req, res) {
 
     if (req.session.user.permissionType == 'admin') {
         var permissionType = req.body.permission_type;
-        query = {permissionType: permissionType};
+        var disabled = req.body.is_disabled == 'on';
+        query = {permissionType: permissionType, disabled: disabled};
     }
 
     if (!_.isEmpty(password)) {

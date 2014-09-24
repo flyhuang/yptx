@@ -34,7 +34,8 @@ router.get('/user/edit/:id', ytHelper.messageAdminRestrict, function (req, res, 
         res.render('edituser', {
             "username": user.username,
             "permission_type": user.permissionType,
-            "id": id
+            "id": id,
+            "disabled":user.disabled
         });
     });
 });

@@ -50,6 +50,15 @@
                                     > 普通用户
                         </label>
                     </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="is_disabled"
+                                    <% if (disabled) { %>
+                                   checked
+                                    <% } %>
+                                    > 禁止此用户
+                        </label>
+                    </div>
                     <% } %>
                     <button type="button" class="btn btn-primary" onclick="updateUser('<%= id %>')">更新用户信息</button>
                 </form>
