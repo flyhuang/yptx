@@ -10,7 +10,8 @@ var express = require('express'),
     router = express.Router(),
     JPush = require("jpush-sdk"),
     passport = require('passport'),
-    oauth2 = require('../libs/oauth2');
+    oauth2 = require('../libs/oauth2'),
+    crypto = require('crypto');
 
 var client = JPush.buildClient('a13e1db90e37e020e545d540', 'da08e43c8d6aff997ffe79bd');
 
@@ -243,9 +244,11 @@ router.post('/update/user/:id', ytHelper.userRestrict, function (req, res) {
         query = {permissionType: permissionType};
     }
 
-    if (_.isEmpty(password)) {
-        query["password"] = password;
+    if (!_.isEmpty(password)) {
+        query["salt"] = crypto.randomBytes(32).toString('base64');
+        query["hashedPassword"] = crypto.createHmac('sha1', query["salt"]).update(password).digest('hex');
     }
+
     User.findOneAndUpdate({_id: id}, query, function (err, user) {
         if (err)
             return res.json({"success": false, "msg": "更新用户信息失败"});

@@ -69,8 +69,9 @@ router.post('/user/changepassword/', passport.authenticate('bearer', { session: 
     if (_.isEmpty(new_password)) {
         return res.json({"success": false, "msg": "新密码不能为空"});
     }
-    User.find({_id: id}, function (err, user) {
-        if (err) return res.json({"success": false, "msg": "更新用户信息失败"});
+    User.findOne({_id: id}, function (err, user) {
+        if (err || !user) return res.json({"success": false, "msg": "更新用户信息失败"});
+
         if (!user.checkPassword(old_password)) {
             return res.json({"success": false, "msg": "密码不正确"});
         }
