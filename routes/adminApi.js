@@ -336,7 +336,8 @@ router.post('/image/upload', ytHelper.messageAdminRestrict, function (req, res) 
 function pushMsgToAPP(messageID, messageTitle, messageType) {
     client.push().setPlatform(JPush.ALL)
         .setAudience(JPush.ALL)
-        .setNotification('银评天下消息提醒', JPush.android('银评天下', messageTitle, 5, {"messageid": messageID, "messageType": messageType}))
+        .setNotification('银评天下消息提醒', JPush.android('银评天下', messageTitle, 5, {"messageid": messageID, "messageType": messageType}),
+                                           JPush.ios('银评天下', messageTitle, 5, {"messageid": messageID, "messageType": messageType}))
         .send(function (err, res) {
             if (err) {
                 if (err instanceof JPush.APIConnectionError) {
