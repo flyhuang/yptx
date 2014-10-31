@@ -17,7 +17,7 @@ script:
 #  - TODO: grunt.
 after_success:
   - echo 'Ready to deploy distro to Linode server.'
-  - fab setup deploy restart clean
+  - travis_wait 30 fab setup deploy restart clean
   - echo 'Deploy entire site to production server finished!!!'
 branches:
   only:
