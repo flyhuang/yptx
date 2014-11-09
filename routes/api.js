@@ -28,9 +28,9 @@ router.get('/messages/:type', [passport.authenticate('bearer', { session: false 
     console.log(currentTime);
     var query = {};
     if (is_lasted) {
-        query = { "type": req.params['type'], "update_at": {"$gte": currentTime}};
+        query = { "type": req.params['type'], "update_at": {"$gt": currentTime}};
     } else {
-        query = { "type": req.params['type'], "update_at": {"$lte": currentTime}};
+        query = { "type": req.params['type'], "update_at": {"$lt": currentTime}};
     }
     Message.find(query, 'type content title update_at', {sort: {update_at: -1}}).paginate(page, count, function (error, messages, total) {
         if (error) return res.json({"success": false});
