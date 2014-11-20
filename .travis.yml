@@ -1,5 +1,5 @@
 node_js:
-  - "0.10"
+  - "0.10.31"
 python:
   - '2.7'
 notifications:
@@ -11,7 +11,7 @@ before_script:
   - chmod 600 ~/.ssh/id_rsa
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - sudo pip install fabric
-  - sudo npm install
+  - npm install
 script:
   - echo 'Build Assets Files.'
 #  - TODO: grunt.
