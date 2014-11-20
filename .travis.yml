@@ -11,7 +11,7 @@ before_script:
   - chmod 600 ~/.ssh/id_rsa
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - sudo pip install fabric
-  - npm install
+  - sudo npm install
 script:
   - echo 'Build Assets Files.'
 #  - TODO: grunt.
