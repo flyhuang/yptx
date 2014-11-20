@@ -337,7 +337,7 @@ function pushMsgToAPP(messageID, messageTitle, messageType) {
     client.push().setPlatform(JPush.ALL)
         .setAudience(JPush.ALL)
         .setNotification('银评天下消息提醒', JPush.android('银评天下', messageTitle, 5, {"messageid": messageID, "messageType": messageType}),
-                                           JPush.ios(messageTitle, null, null, null, {"messageid": messageID, "messageType": messageType}))
+                                           JPush.ios(messageTitle, 'default', null, null, {"messageid": messageID, "messageType": messageType}))
         .send(function (err, res) {
             if (err) {
                 if (err instanceof JPush.APIConnectionError) {
